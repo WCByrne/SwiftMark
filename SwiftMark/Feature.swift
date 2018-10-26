@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 /// Markdown features that can be enabled for a Parser
 public struct Feature: OptionSet {
     /// :nodoc:

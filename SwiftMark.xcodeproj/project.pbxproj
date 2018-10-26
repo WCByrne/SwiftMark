@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		DE78F77721838D5300F0B68E /* SwiftMark.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE78F76D21838D5200F0B68E /* SwiftMark.framework */; };
-		DE78F77C21838D5300F0B68E /* SwiftMarkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE78F77B21838D5300F0B68E /* SwiftMarkTests.swift */; };
+		DE78F77C21838D5300F0B68E /* ParserPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE78F77B21838D5300F0B68E /* ParserPerformanceTests.swift */; };
 		DE78F77E21838D5300F0B68E /* SwiftMark.h in Headers */ = {isa = PBXBuildFile; fileRef = DE78F77021838D5200F0B68E /* SwiftMark.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DE78F78821838D6100F0B68E /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE78F78721838D6100F0B68E /* Parser.swift */; };
 		DE78F78A21838D9200F0B68E /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE78F78921838D9200F0B68E /* Extensions.swift */; };
@@ -16,6 +16,8 @@
 		DE78F78E21838DD600F0B68E /* NodeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE78F78D21838DD600F0B68E /* NodeType.swift */; };
 		DE78F79021838E1B00F0B68E /* Scanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE78F78F21838E1B00F0B68E /* Scanner.swift */; };
 		DE78F7942183B35600F0B68E /* Feature.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE78F7932183B35600F0B68E /* Feature.swift */; };
+		DE78F7972183B9A400F0B68E /* Fixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE78F7962183B9A400F0B68E /* Fixtures.swift */; };
+		DE78F7992183C31A00F0B68E /* ParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE78F7982183C31A00F0B68E /* ParserTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,7 +35,7 @@
 		DE78F77021838D5200F0B68E /* SwiftMark.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftMark.h; sourceTree = "<group>"; };
 		DE78F77121838D5200F0B68E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DE78F77621838D5300F0B68E /* SwiftMarkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftMarkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		DE78F77B21838D5300F0B68E /* SwiftMarkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftMarkTests.swift; sourceTree = "<group>"; };
+		DE78F77B21838D5300F0B68E /* ParserPerformanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParserPerformanceTests.swift; sourceTree = "<group>"; };
 		DE78F77D21838D5300F0B68E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DE78F78721838D6100F0B68E /* Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
 		DE78F78921838D9200F0B68E /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
@@ -42,6 +44,8 @@
 		DE78F78F21838E1B00F0B68E /* Scanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scanner.swift; sourceTree = "<group>"; };
 		DE78F7912183963400F0B68E /* SwiftMark.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = SwiftMark.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		DE78F7932183B35600F0B68E /* Feature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Feature.swift; sourceTree = "<group>"; };
+		DE78F7962183B9A400F0B68E /* Fixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fixtures.swift; sourceTree = "<group>"; };
+		DE78F7982183C31A00F0B68E /* ParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParserTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,7 +103,9 @@
 		DE78F77A21838D5300F0B68E /* SwiftMarkTests */ = {
 			isa = PBXGroup;
 			children = (
-				DE78F77B21838D5300F0B68E /* SwiftMarkTests.swift */,
+				DE78F77B21838D5300F0B68E /* ParserPerformanceTests.swift */,
+				DE78F7982183C31A00F0B68E /* ParserTests.swift */,
+				DE78F7962183B9A400F0B68E /* Fixtures.swift */,
 				DE78F77D21838D5300F0B68E /* Info.plist */,
 			);
 			path = SwiftMarkTests;
@@ -258,7 +264,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DE78F77C21838D5300F0B68E /* SwiftMarkTests.swift in Sources */,
+				DE78F77C21838D5300F0B68E /* ParserPerformanceTests.swift in Sources */,
+				DE78F7972183B9A400F0B68E /* Fixtures.swift in Sources */,
+				DE78F7992183C31A00F0B68E /* ParserTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -453,6 +461,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = SwiftMarkTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -461,6 +470,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.nounproject.SwiftMarkTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
@@ -479,6 +490,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.nounproject.SwiftMarkTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
