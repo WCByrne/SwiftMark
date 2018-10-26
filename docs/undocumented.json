@@ -1,0 +1,110 @@
+{
+  "warnings": [
+    {
+      "file": "/Users/Wes/Documents/NounProject/Libraries/SwiftMark/SwiftMark/Feature.swift",
+      "line": 35,
+      "symbol": "Feature.all",
+      "symbol_kind": "source.lang.swift.decl.var.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/Libraries/SwiftMark/SwiftMark/NodeType.swift",
+      "line": 28,
+      "symbol": "NodeType.document",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/Libraries/SwiftMark/SwiftMark/NodeType.swift",
+      "line": 29,
+      "symbol": "NodeType.text(_:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/Libraries/SwiftMark/SwiftMark/NodeType.swift",
+      "line": 30,
+      "symbol": "NodeType.heading(_:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/Libraries/SwiftMark/SwiftMark/NodeType.swift",
+      "line": 31,
+      "symbol": "NodeType.blockQuote(_:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/Libraries/SwiftMark/SwiftMark/NodeType.swift",
+      "line": 32,
+      "symbol": "NodeType.list(_:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/Libraries/SwiftMark/SwiftMark/NodeType.swift",
+      "line": 33,
+      "symbol": "NodeType.listItem",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/Libraries/SwiftMark/SwiftMark/NodeType.swift",
+      "line": 34,
+      "symbol": "NodeType.inlineCode",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/Libraries/SwiftMark/SwiftMark/NodeType.swift",
+      "line": 35,
+      "symbol": "NodeType.horizontalRule",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/Libraries/SwiftMark/SwiftMark/NodeType.swift",
+      "line": 36,
+      "symbol": "NodeType.codeBlock",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/Libraries/SwiftMark/SwiftMark/NodeType.swift",
+      "line": 37,
+      "symbol": "NodeType.emphasis(_:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/Libraries/SwiftMark/SwiftMark/NodeType.swift",
+      "line": 38,
+      "symbol": "NodeType.strong(_:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/Libraries/SwiftMark/SwiftMark/NodeType.swift",
+      "line": 39,
+      "symbol": "NodeType.strike(_:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/Libraries/SwiftMark/SwiftMark/NodeType.swift",
+      "line": 40,
+      "symbol": "NodeType.link(_:_:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/Libraries/SwiftMark/SwiftMark/NodeType.swift",
+      "line": 41,
+      "symbol": "NodeType.image(_:_:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    }
+  ],
+  "source_directory": "/Users/Wes/Documents/NounProject/Libraries/SwiftMark"
+}
