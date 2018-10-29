@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C73998E21879E4B0045AE5B /* AttributedString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C73998D21879E4B0045AE5B /* AttributedString.swift */; };
 		DE78F77721838D5300F0B68E /* SwiftMark.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE78F76D21838D5200F0B68E /* SwiftMark.framework */; };
 		DE78F77C21838D5300F0B68E /* ParserPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE78F77B21838D5300F0B68E /* ParserPerformanceTests.swift */; };
 		DE78F77E21838D5300F0B68E /* SwiftMark.h in Headers */ = {isa = PBXBuildFile; fileRef = DE78F77021838D5200F0B68E /* SwiftMark.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -31,6 +32,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1C73998D21879E4B0045AE5B /* AttributedString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributedString.swift; sourceTree = "<group>"; };
 		DE78F76D21838D5200F0B68E /* SwiftMark.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftMark.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE78F77021838D5200F0B68E /* SwiftMark.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftMark.h; sourceTree = "<group>"; };
 		DE78F77121838D5200F0B68E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -93,6 +95,7 @@
 				DE78F78721838D6100F0B68E /* Parser.swift */,
 				DE78F7932183B35600F0B68E /* Feature.swift */,
 				DE78F78B21838DB500F0B68E /* Node.swift */,
+				1C73998D21879E4B0045AE5B /* AttributedString.swift */,
 				DE78F78D21838DD600F0B68E /* NodeType.swift */,
 				DE78F7952183B3AB00F0B68E /* Helpers */,
 				DE78F77121838D5200F0B68E /* Info.plist */,
@@ -256,6 +259,7 @@
 				DE78F78E21838DD600F0B68E /* NodeType.swift in Sources */,
 				DE78F78821838D6100F0B68E /* Parser.swift in Sources */,
 				DE78F79021838E1B00F0B68E /* Scanner.swift in Sources */,
+				1C73998E21879E4B0045AE5B /* AttributedString.swift in Sources */,
 				DE78F78A21838D9200F0B68E /* Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -421,6 +425,7 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nounproject.SwiftMark;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -448,6 +453,7 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nounproject.SwiftMark;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;

@@ -41,6 +41,7 @@ open class Parser {
     /// - Returns: The root document node that is the top of the tree
     public func parse() -> Node {
         
+        // This should be replaced by scanning the newlines but this was a quick hack
         let lines = self.markdown.components(separatedBy: .newlines)
         let markCharacters = CharacterSet(charactersIn: "*_-#>~`[\\")
         var document = Node(type: .document)
@@ -95,7 +96,8 @@ open class Parser {
             }
         }
         
-        for _line in lines {
+        for (lineIndex, _line) in lines.enumerated() {
+            let isLastLine = lineIndex == lines.count - 1
             isNewline = true
             let line = _line.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
             let scanner = Scanner(string: line)
@@ -179,7 +181,9 @@ open class Parser {
                 isNewline = false
             }
             
-            stack.append(NodeType.text("\n"))
+            if !isLastLine {
+                stack.append(NodeType.text("\n"))
+            }
             stack = stack.reducingText()
             
             var cursor = 0
