@@ -77,6 +77,11 @@ public extension Node {
                 font.bold = true
                 defer { font.bold = false }
                 return processChildren()
+            case .horizontalRule:
+                let attachment = NSTextAttachment(fileWrapper: nil)
+                attachment.attachmentCell = HorizontalRuleAttachmentCell(imageCell: nil)
+                return NSAttributedString(attachment: attachment)
+                
             case let .list(ordered):
                 let list = NSMutableAttributedString()
                 for (idx, listItem) in node.children.enumerated() {
@@ -107,5 +112,21 @@ public extension Node {
         }
         
         return render(node: self)
+    }
+}
+
+private class HorizontalRuleAttachmentCell: NSTextAttachmentCell {
+    override func cellFrame(for textContainer: NSTextContainer, proposedLineFragment lineFrag: NSRect, glyphPosition position: NSPoint, characterIndex charIndex: Int) -> NSRect {
+        return CGRect(x: 0, y: 0, width: lineFrag.size.width, height: 24)
+    }
+    
+    override func draw(withFrame cellFrame: NSRect, in controlView: NSView?) {
+        NSColor(white: 0.8, alpha: 1).set()
+        var inset = cellFrame.insetBy(dx: 2, dy: 0)
+        inset.origin.x += 2
+        inset.origin.y += 11
+        inset.size.height = 1
+        inset.size.width -= 20
+        inset.fill()
     }
 }
