@@ -46,7 +46,7 @@ Bold is done with \\*\\*Bold**
 You can escape characters with a \\
 """
 
-let parser = Parser(markdown: rawMarkdown, options: [
+let parser = Parser(markdown: rawMarkdown, features: [
     .blockQuote,
     .codeBlock,
 //    .headings,

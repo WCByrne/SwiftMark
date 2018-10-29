@@ -234,9 +234,13 @@ open class Parser {
                 }
                 return res
             }
-            
             let newNodes = nodes(upTo: stack.count)
             (quote ?? document).children.append(contentsOf: newNodes)
+        }
+        closeList()
+        closeQuote()
+        if document.children.last?.type == .text("\n") {
+            _ = document.children.popLast()
         }
         return document
     }

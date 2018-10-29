@@ -31,6 +31,11 @@ public struct Feature: OptionSet {
     /// Horizontal Rule
     public static let horizontalRule = Feature(rawValue: 1 << 6)
     
-    public static let all: Feature = [.blockQuote, .inlineCode, .codeBlock, .headings,
-                                      .orderedList, .unorderedList, .horizontalRule]
+    public static let all: Feature = [.blockQuote,
+                                      .inlineCode,
+                                      .codeBlock,
+                                      .headings,
+                                      .orderedList,
+                                      .unorderedList,
+                                      .horizontalRule]
 }
