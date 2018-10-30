@@ -37,23 +37,6 @@
                BlueprintName = "SwiftMarkTests"
                ReferencedContainer = "container:SwiftMark.xcodeproj">
             </BuildableReference>
-            <SkippedTests>
-               <Test
-                  Identifier = "ParserTests/testBoldItalic_underscore()">
-               </Test>
-               <Test
-                  Identifier = "ParserTests/testBold_extraLeadingMark()">
-               </Test>
-               <Test
-                  Identifier = "ParserTests/testBold_extraTrailingMark()">
-               </Test>
-               <Test
-                  Identifier = "ParserTests/testItalic_extraLeadingMark()">
-               </Test>
-               <Test
-                  Identifier = "ParserTests/testItalic_extraTrailingMark()">
-               </Test>
-            </SkippedTests>
          </TestableReference>
       </Testables>
       <MacroExpansion>

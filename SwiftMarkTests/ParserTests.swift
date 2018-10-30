@@ -39,7 +39,7 @@ class ParserTests: XCTestCase {
         print(doc.children)
         XCTAssertEqual(doc.children.count, 2)
         XCTAssertEqual(doc.children[0].type, .strong("__"))
-        XCTAssertEqual(doc.children[1].type, .text("_"))   
+        XCTAssertEqual(doc.children[1].type, .text("_"))
     }
      */
     
@@ -121,7 +121,7 @@ class ParserTests: XCTestCase {
         
         let list = doc.children[0]
         XCTAssertEqual(list.type, .list(true))
-        
+
         // TODO: these newlines should be handled better
         let items = ["One\n", "Two\n", "Three"]
         for (idx, text) in items.enumerated() {
