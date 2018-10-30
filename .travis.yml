@@ -1,0 +1,5 @@
+
+language: objective-c
+osx_image: xcode10
+os: osx
+script: xcodebuild clean && xcodebuild test -project SwiftMark.xcodeproj -scheme SwiftMarkTests
