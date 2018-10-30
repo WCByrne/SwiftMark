@@ -86,7 +86,7 @@ public extension Node {
                 let list = NSMutableAttributedString()
                 for (idx, listItem) in node.children.enumerated() {
                     assert(listItem.type == .listItem, "None list item in list")
-                    let bullet = ordered ? "\(idx + 1). " : "• "
+                    let bullet = ordered ? "\(idx + 1). " : "● "
                     list.append(NSAttributedString(string: bullet))
                     let itemText = render(node: listItem)
                     list.append(itemText)
