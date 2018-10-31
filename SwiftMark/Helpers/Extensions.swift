@@ -24,3 +24,15 @@ extension String {
         return String(self.dropFirst(prefix.count))
     }
 }
+
+extension URL {
+    /// If the url doesn't have a scheme it may not open correctly in the browser.
+    var validatingScheme: URL {
+        // Do check to make sure the url isn't a relative url
+        // Note probably won't work anyways by default
+        if self.scheme == nil, let u = URL(string: "http://\(self.absoluteString)"), u.host != nil {
+            return u
+        }
+        return self
+    }
+}

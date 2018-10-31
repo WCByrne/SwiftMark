@@ -103,7 +103,7 @@ public extension Node {
             case let .link(title, url):
                 var attrs = font.attributes
                 attrs[.underlineStyle] = NSUnderlineStyle.single.rawValue
-                attrs[.link] = url
+                attrs[.link] = URL(string: url)?.validatingScheme
                 return NSAttributedString(string: title, attributes: attrs)
                 
             default:
