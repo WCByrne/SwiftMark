@@ -146,7 +146,6 @@ class ParserTests: XCTestCase {
         }
     }
     
-    
     func testUnorderedList_Italic() {
         // Previous parsing strategies caused this to fail because all leading
         // asteisks and whitespace were consumed by the parser
