@@ -90,7 +90,7 @@ class ParserTests: XCTestCase {
         XCTAssertEqual(emph.type, .emphasis("*"))
         XCTAssertEqual(emph.children.count, 1)
         XCTAssertEqual(bold.type, .strong("__"))
-        XCTAssertEqual(bold.children[0].type, .text("BoldItalic"))
+        XCTAssertEqual(bold.child?.type, .text("BoldItalic"))
     }
     
     func testUnorderedList() {
@@ -108,7 +108,26 @@ class ParserTests: XCTestCase {
         for (idx, text) in items.enumerated() {
             let listItem = list.children[idx]
             XCTAssertEqual(listItem.type, .listItem)
-            XCTAssertEqual(listItem.children[0].type, .text(text))
+            XCTAssertEqual(listItem.child?.type, .text(text))
+        }
+    }
+    
+    func testUnorderedList_dashes() {
+        let doc = parse("""
+        - One
+        - Two
+        - Three
+        """)
+        
+        let list = doc.children[0]
+        XCTAssertEqual(list.type, .list(false))
+        
+        // TODO: these newlines should be handled better
+        let items = ["One\n", "Two\n", "Three"]
+        for (idx, text) in items.enumerated() {
+            let listItem = list.children[idx]
+            XCTAssertEqual(listItem.type, .listItem)
+            XCTAssertEqual(listItem.child?.type, .text(text))
         }
     }
     
@@ -127,8 +146,25 @@ class ParserTests: XCTestCase {
         for (idx, text) in items.enumerated() {
             let listItem = list.children[idx]
             XCTAssertEqual(listItem.type, .listItem)
-            XCTAssertEqual(listItem.children[0].type, .text(text))
+            XCTAssertEqual(listItem.child?.type, .text(text))
         }
+    }
+    
+    func testUnorderedList_Italic() {
+        // Previous parsing strategies causes this to fail
+        // * *Italic list item*
+        // * **Bold List Item**
+        
+        let doc = self.parse("""
+        * *Italic list item*
+        * **Bold list item**
+        """)
+
+        let items = doc.children[0].children
+        XCTAssertEqual(items[0].child?.type, .emphasis("*"))
+        XCTAssertEqual(items[0].child?.child?.type, .text("Italic list item"))
+        XCTAssertEqual(items[1].child?.type, .strong("**"))
+        XCTAssertEqual(items[1].child?.child?.type, .text("Bold list item"))
     }
 
 }

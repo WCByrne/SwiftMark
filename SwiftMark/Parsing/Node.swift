@@ -22,6 +22,14 @@ public class Node {
     }
 }
 
+public extension Node {
+    
+    /// The first child if any
+    public var child: Node? {
+        return children.first
+    }
+}
+
 extension Node: CustomDebugStringConvertible {
     /// :nodoc:
     public var debugDescription: String {
