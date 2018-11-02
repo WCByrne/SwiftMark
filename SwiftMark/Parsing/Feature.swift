@@ -16,6 +16,10 @@ public struct Feature: OptionSet {
     public init(rawValue: Int) {
         self.rawValue = rawValue
     }
+    
+    // MARK: - Options
+    /*-------------------------------------------------------------------------------*/
+    
     /// Block Quote
     public static let blockQuote = Feature(rawValue: 1 << 0)
     /// Inline Code
@@ -33,6 +37,10 @@ public struct Feature: OptionSet {
     /// Allow multiple line breaks
     public static let allowMultipleLineBreaks = Feature(rawValue: 1 << 7)
     
+    // MARK: - Presets
+    /*-------------------------------------------------------------------------------*/
+    
+    /// All available features
     public static let all: Feature = [.blockQuote,
                                       .inlineCode,
                                       .codeBlock,
@@ -42,6 +50,7 @@ public struct Feature: OptionSet {
                                       .horizontalRule,
                                       .allowMultipleLineBreaks]
     
+    /// Standard markdown features
     public static let standard: Feature = [.blockQuote,
                                            .inlineCode,
                                            .codeBlock,
