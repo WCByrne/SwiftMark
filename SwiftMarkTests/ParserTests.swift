@@ -26,22 +26,24 @@ class ParserTests: XCTestCase {
         XCTAssertEqual(doc.children.count, 1)
         XCTAssertEqual(doc.children[0].type, .strong("__"))
     }
-    /*
+    
     func testBold_extraLeadingMark() {
         let doc = parse("___Bold__")
         print(doc.children)
-        XCTAssertEqual(doc.children.count, 2)
-        XCTAssertEqual(doc.children[0].type, .text("_"))
-        XCTAssertEqual(doc.children[1].type, .strong("__"))
+        XCTAssertEqual(doc.children.count, 1)
+        let strong = doc.children[0]
+        XCTAssertEqual(strong.type, .strong("__"))
+        XCTAssertEqual(strong.children[0].type, .text("_"))
+        XCTAssertEqual(strong.children[1].type, .text("Bold"))
     }
     func testBold_extraTrailingMark() {
         let doc = parse("__Bold___")
         print(doc.children)
         XCTAssertEqual(doc.children.count, 2)
         XCTAssertEqual(doc.children[0].type, .strong("__"))
+        XCTAssertEqual(doc.children[0].child?.type, .text("Bold"))
         XCTAssertEqual(doc.children[1].type, .text("_"))
     }
-     */
     
     func testItalic_astrisk() {
         let doc = parse("*Italic*")
@@ -53,7 +55,7 @@ class ParserTests: XCTestCase {
         XCTAssertEqual(doc.children.count, 1)
         XCTAssertEqual(doc.children[0].type, .emphasis("_"))
     }
-    /*
+    
     func testItalic_extraLeadingMark() {
         let doc = parse("__Italic_")
         print(doc.children)
@@ -73,13 +75,15 @@ class ParserTests: XCTestCase {
         let doc = parse("___BoldItalic___")
         print(doc.children)
         XCTAssertEqual(doc.children.count, 1)
-        let emph = doc.children[0]
-        let bold = emph.children[0]
-        XCTAssertEqual(emph.type, .emphasis("*"))
-        XCTAssertEqual(emph.children.count, 1)
-        XCTAssertEqual(bold.type, .strong("__"))
+        guard let strong = doc.child,
+            let emph = strong.child else {
+                XCTFail("Failed to parse nested bold/italic")
+                return
+        }
+        XCTAssertEqual(emph.type, .emphasis("_"))
+        XCTAssertEqual(strong.type, .strong("__"))
+        XCTAssertEqual(emph.child?.type, .text("BoldItalic"))
     }
-     */
     
     func testBoldItalic_astriskUnderscore() {
         let doc = parse("*__BoldItalic__*")

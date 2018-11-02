@@ -102,6 +102,7 @@ open class Parser {
             isNewline = true
             let line = _line.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
             let scanner = Scanner(string: line)
+            var lastEmph = ""
             scanner.charactersToBeSkipped = CharacterSet()
             var stack = [NodeType]()
             
@@ -119,6 +120,7 @@ open class Parser {
                 continue
             }
             wasNewline = false
+            
             
             while true {
                 if isNewline {
@@ -149,7 +151,6 @@ open class Parser {
                     if stack.last != .listItem {
                         closeList()
                     }
-                    
                 }
                 if let text = scanner.scanUpToCharacters(from: markCharacters) {
                     stack.append(.text(text))
@@ -157,13 +158,16 @@ open class Parser {
                 else if let markText = scanner.scanCharacters(from: markCharacters) {
                     var marks = [String]()
                     var last: String = ""
-                    
                     func commitLast() {
                         if !last.isEmpty {
+                            if last.first == "_" || last.first == "*" {
+                                lastEmph = last
+                            }
                             marks.append(last)
                         }
                         last = ""
                     }
+                    
                     for char in markText {
                         switch char {
                         case _ where last == "\\":
@@ -183,8 +187,16 @@ open class Parser {
                                 commitLast()
                                 last.append(char)
                             }
-                        case _ where last.isEmpty || last.last == char:
+                        case _ where last.last == char && (char == "_" || char == "*"):
+                            if last == lastEmph {
+                                commitLast()
+                                lastEmph = ""
+                            } else if last.count == 2 {
+                                commitLast()
+                            }
                             last.append(char)
+                        case _ where last.isEmpty || last.last == char:
+                                last.append(char)
                         default:
                             commitLast()
                             last.append(char)
@@ -240,6 +252,16 @@ open class Parser {
                     //                                        children: nodes(upTo: end)))
                     case .link:
                         res.append(Node(type: current))
+                        
+                    case let .strong(mark):
+                        let char = "\(mark.first!)"
+                        if let close = next(indexOf: current)  {
+                            res.append(Node(type: current, children: nodes(upTo: close)))
+                        } else if let close = next(indexOf: NodeType.emphasis(char)) {
+                            res.append(Node(type: .text(char)))
+                            res.append(Node(type: .emphasis(char), children: nodes(upTo: close)))
+                        }
+                        
                     default:
                         if let close = next(indexOf: current) {
                             res.append(Node(type: current,
