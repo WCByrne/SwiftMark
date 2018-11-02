@@ -60,10 +60,11 @@ extension Scanner {
     
     func scanUnorderedList() -> String? {
         let loc = self.scanLocation
-        guard let mark = self.scanCharacters(in: "-* ") else { return nil }
-        if mark.hasSuffix(" ") && !mark.hasPrefix(" ")
-            && mark.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).count == 1 {
-            return mark
+        self.scanWhitespace()
+        for check in ["- ", "* "] {
+            if let mark = self.scanString(check) {
+                return mark
+            }
         }
         self.scanLocation = loc
         return nil
@@ -72,8 +73,7 @@ extension Scanner {
     func scanOrderedList() -> String? {
         let loc = self.scanLocation
         guard let mark = self.scanCharacters(in: "0123456789") else { return nil }
-        if self.scanCharacters(in: ".") != nil {
-            self.scanWhitespace()
+        if self.scanString(". ") != nil {
             return mark
         }
         self.scanLocation = loc

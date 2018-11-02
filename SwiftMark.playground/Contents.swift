@@ -59,7 +59,7 @@ Bold is done with \\*\\*Bold**
 You can escape characters with a \\
 """
 
-let parser = Parser(markdown: rawMarkdown, features: [
+let parser = Parser(markdown: "* *Bold*", features: [
     .blockQuote,
     .codeBlock,
 //    .headings,
