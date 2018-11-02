@@ -23,7 +23,6 @@ public class Node {
 }
 
 public extension Node {
-    
     /// The first child if any
     public var child: Node? {
         return children.first
@@ -41,5 +40,18 @@ extension Node: CustomDebugStringConvertible {
         let _children = children.map { return $0.formattedDescription(level: level + 1) }
         comps.append(contentsOf: _children)
         return comps.joined(separator: "\n")
+    }
+}
+
+extension Node {
+    /// Enumerate the node and its children
+    ///
+    /// - Parameter enumerator: A block to call with each touched node
+    func enumerate(_ enumerator: (Node) -> Void) {
+        enumerator(self)
+        for c in self.children {
+            c.enumerate(enumerator
+            )
+        }
     }
 }

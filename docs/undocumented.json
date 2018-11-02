@@ -2,8 +2,15 @@
   "warnings": [
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/SwiftMark/SwiftMark/Parsing/Feature.swift",
-      "line": 34,
+      "line": 36,
       "symbol": "Feature.all",
+      "symbol_kind": "source.lang.swift.decl.var.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/SwiftMark/SwiftMark/Parsing/Feature.swift",
+      "line": 45,
+      "symbol": "Feature.standard",
       "symbol_kind": "source.lang.swift.decl.var.static",
       "warning": "undocumented"
     },

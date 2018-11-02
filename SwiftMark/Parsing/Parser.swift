@@ -28,7 +28,7 @@ open class Parser {
     /// - Parameters:
     ///   - markdown: The raw markdown string to be parsed
     ///   - options: Options for enabling specific markdown features
-    public init(markdown: String, features: Feature = .all) {
+    public init(markdown: String, features: Feature = .standard) {
         self.markdown = markdown
         self.features = features
     }
@@ -46,6 +46,7 @@ open class Parser {
         let markCharacters = CharacterSet(charactersIn: "*_-#>~`[\\")
         var document = Node(type: .document)
         
+        var wasNewline = false
         var isNewline = true
         
         func nodeType(for string: String) -> NodeType {
@@ -103,6 +104,21 @@ open class Parser {
             let scanner = Scanner(string: line)
             scanner.charactersToBeSkipped = CharacterSet()
             var stack = [NodeType]()
+            
+            func append(newNodes: [Node]) {
+                (quote ?? document).children.append(contentsOf: newNodes)
+            }
+            
+            if line.isEmpty {
+                closeList()
+                closeQuote()
+                if !wasNewline || features.contains(.allowMultipleLineBreaks) {
+                    append(newNodes: [Node(type: .text("\n"))])
+                }
+                wasNewline = true
+                continue
+            }
+            wasNewline = false
             
             while true {
                 if isNewline {
@@ -239,7 +255,7 @@ open class Parser {
                 return res
             }
             let newNodes = nodes(upTo: stack.count)
-            (quote ?? document).children.append(contentsOf: newNodes)
+            append(newNodes: newNodes)
         }
         closeList()
         closeQuote()

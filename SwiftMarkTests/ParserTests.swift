@@ -11,7 +11,7 @@ import XCTest
 
 class ParserTests: XCTestCase {
 
-    func parse(_ string: String, features: Feature = .all) -> Node {
+    func parse(_ string: String, features: Feature = .standard) -> Node {
         let parser = Parser(markdown: string, features: features)
         return parser.parse()
     }
@@ -99,10 +99,8 @@ class ParserTests: XCTestCase {
         * Two
         * Three
         """)
-        
         let list = doc.children[0]
         XCTAssertEqual(list.type, .list(false))
-        
         // TODO: these newlines should be handled better
         let items = ["One\n", "Two\n", "Three"]
         for (idx, text) in items.enumerated() {
@@ -118,7 +116,6 @@ class ParserTests: XCTestCase {
         - Two
         - Three
         """)
-        
         let list = doc.children[0]
         XCTAssertEqual(list.type, .list(false))
         
@@ -137,7 +134,6 @@ class ParserTests: XCTestCase {
         1. Two
         1. Three
         """)
-        
         let list = doc.children[0]
         XCTAssertEqual(list.type, .list(true))
 
@@ -150,21 +146,105 @@ class ParserTests: XCTestCase {
         }
     }
     
+    
     func testUnorderedList_Italic() {
-        // Previous parsing strategies causes this to fail
-        // * *Italic list item*
-        // * **Bold List Item**
-        
+        // Previous parsing strategies caused this to fail because all leading
+        // asteisks and whitespace were consumed by the parser
         let doc = self.parse("""
         * *Italic list item*
         * **Bold list item**
         """)
-
         let items = doc.children[0].children
         XCTAssertEqual(items[0].child?.type, .emphasis("*"))
         XCTAssertEqual(items[0].child?.child?.type, .text("Italic list item"))
         XCTAssertEqual(items[1].child?.type, .strong("**"))
         XCTAssertEqual(items[1].child?.child?.type, .text("Bold list item"))
     }
+    
+    // MARK: - Multiple Newline
+    /*-------------------------------------------------------------------------------*/
+    var newlineTestString: String {
+        return """
+        Line one
+        
+        Line two
+        
+        
+        
+        Line three
+        """
+    }
+    
+    func testMultipleNewlines_standrd() {
+        let doc = self.parse(newlineTestString)
+        let lines = doc.children
+        let expected = [
+            "Line one\n",
+            "\n",
+            "Line two\n",
+            "\n",
+            "Line three"
+        ]
+        if lines.count == expected.count {
+            for idx in 0..<lines.count {
+                XCTAssertEqual(lines[idx].type, .text(expected[idx]))
+            }
+        } else {
+            XCTFail("line count does not match expected line count")
+        }
+    }
 
+    func testMultipleNewlines_allow() {
+        let doc = self.parse(newlineTestString, features: .all)
+        let lines = doc.children
+        let expected = [
+        "Line one\n",
+        "\n",
+        "Line two\n",
+        "\n",
+        "\n",
+        "\n",
+        "Line three"
+        ]
+        if lines.count == expected.count {
+            for idx in 0..<lines.count {
+                XCTAssertEqual(lines[idx].type, .text(expected[idx]))
+            }
+        } else {
+            XCTFail("line count does not match expected line count")
+        }
+    }
+    
+    // List newline padding
+    /*-------------------------------------------------------------------------------*/
+    // A previous bug caused newlines to be inserted or removed incorrectly around lists
+    
+    func testListWithNewlineBefore() {
+        let doc = parse("""
+        Text
+
+        * List item
+        more text
+        """)
+        XCTAssertEqual(doc.children[0].type, .text("Text\n"))
+        XCTAssertEqual(doc.children[1].type, .text("\n"))
+        XCTAssertEqual(doc.children[2].type, .list(false))
+        XCTAssertEqual(doc.children[2].child?.type, .listItem)
+        XCTAssertEqual(doc.children[3].type, .text("more text"))
+    }
+    
+    func testListWithNewlineAfter() {
+        let doc = parse("""
+        Text
+        * List item
+        
+        more text
+        """)
+        XCTAssertEqual(doc.children[0].type, .text("Text\n"))
+        XCTAssertEqual(doc.children[1].type, .list(false))
+        XCTAssertEqual(doc.children[1].child?.type, .listItem)
+        XCTAssertEqual(doc.children[2].type, .text("\n"))
+        XCTAssertEqual(doc.children[3].type, .text("more text"))
+    }
+    
 }

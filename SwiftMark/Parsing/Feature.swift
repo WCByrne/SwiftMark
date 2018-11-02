@@ -30,6 +30,8 @@ public struct Feature: OptionSet {
     public static let unorderedList = Feature(rawValue: 1 << 5)
     /// Horizontal Rule
     public static let horizontalRule = Feature(rawValue: 1 << 6)
+    /// Allow multiple line breaks
+    public static let allowMultipleLineBreaks = Feature(rawValue: 1 << 7)
     
     public static let all: Feature = [.blockQuote,
                                       .inlineCode,
@@ -37,5 +39,14 @@ public struct Feature: OptionSet {
                                       .headings,
                                       .orderedList,
                                       .unorderedList,
-                                      .horizontalRule]
+                                      .horizontalRule,
+                                      .allowMultipleLineBreaks]
+    
+    public static let standard: Feature = [.blockQuote,
+                                           .inlineCode,
+                                           .codeBlock,
+                                           .headings,
+                                           .orderedList,
+                                           .unorderedList,
+                                           .horizontalRule]
 }
