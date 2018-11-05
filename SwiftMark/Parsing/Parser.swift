@@ -121,7 +121,6 @@ open class Parser {
             }
             wasNewline = false
             
-            
             while true {
                 if isNewline {
                     if features.contains(.blockQuote), let text = scanner.scanCharacters(in: "> ") {
@@ -188,10 +187,11 @@ open class Parser {
                                 last.append(char)
                             }
                         case _ where last.last == char && (char == "_" || char == "*"):
-                            if last == lastEmph {
-                                commitLast()
-                                lastEmph = ""
-                            } else if last.count == 2 {
+//                            if last == lastEmph {
+//                                commitLast()
+//                                lastEmph = ""
+//                            } else
+                            if last.count == 2 {
                                 commitLast()
                             }
                             last.append(char)
@@ -241,25 +241,37 @@ open class Parser {
                         res.append(Node(type: current))
                     case .listItem:
                         assert(list != nil, "list item with not list open")
-                        
                         let item = Node(type: current,
                                         children: nodes(upTo: end))
                         list!.children.append(item)
-                    //                        res.append(list!)
                     case .blockQuote:
                         print("Got block quote when parsing children ??")
-                        //                        res.append(Node(type: current,
-                    //                                        children: nodes(upTo: end)))
                     case .link:
                         res.append(Node(type: current))
                         
                     case let .strong(mark):
                         let char = "\(mark.first!)"
-                        if let close = next(indexOf: current)  {
+                        if let close = next(indexOf: current) {
                             res.append(Node(type: current, children: nodes(upTo: close)))
+                            cursor += 1
                         } else if let close = next(indexOf: NodeType.emphasis(char)) {
                             res.append(Node(type: .text(char)))
                             res.append(Node(type: .emphasis(char), children: nodes(upTo: close)))
+                            cursor += 1
+                        }  else if let txt = current.asText {
+                            res.append(Node(type: txt))
+                        }
+                    case let .emphasis(mark):
+                        let char = "\(mark.first!)"
+                        if let close = next(indexOf: current) {
+                            res.append(Node(type: current, children: nodes(upTo: close)))
+                            cursor += 1
+                        } else if let close = next(indexOf: NodeType.strong("\(char)\(char)")) {
+                            res.append(Node(type: .emphasis(char), children: nodes(upTo: close)))
+                            res.append(Node(type: .text(char)))
+                            cursor += 1
+                        } else if let txt = current.asText {
+                            res.append(Node(type: txt))
                         }
                         
                     default:
