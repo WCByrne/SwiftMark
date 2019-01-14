@@ -200,7 +200,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1000;
-				LastUpgradeCheck = 1000;
+				LastUpgradeCheck = 1010;
 				ORGANIZATIONNAME = "The Noun Project";
 				TargetAttributes = {
 					DE78F76C21838D5200F0B68E = {
@@ -496,7 +496,6 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.nounproject.SwiftMarkTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
 			};
