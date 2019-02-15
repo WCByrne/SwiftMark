@@ -16,7 +16,7 @@ public extension Node {
     /// Render the node and it's children as an NSAttributedString
     ///
     /// - Returns: An attributed string that represents the tree starting at the reciever
-    public func attributedString() -> NSAttributedString {
+    public func attributedString(baseFont: NSFont = NSFont.systemFont(ofSize: 13)) -> NSAttributedString {
         struct Font {
             let base: NSFont
             var size: CGFloat?
@@ -24,7 +24,7 @@ public extension Node {
             var bold: Bool = false
             var italic: Bool = false
             
-            init(base: NSFont = NSFont.systemFont(ofSize: 13)) {
+            init(base: NSFont) {
                 self.base = base
             }
             
@@ -50,7 +50,7 @@ public extension Node {
             }
         }
         
-        var font = Font()
+        var font = Font(base: baseFont)
         
         func render(node: Node) -> NSAttributedString {
             func processChildren() -> NSMutableAttributedString {
@@ -62,11 +62,11 @@ public extension Node {
             
             switch node.type {
             case let .heading(level):
-                font.size = 13 + CGFloat(level * 4)
+                font.size = baseFont.pointSize + CGFloat(level * 4)
                 font.bold = true
                 defer {
                     font.bold = false
-                    font.size = 13
+                    font.size = baseFont.pointSize
                 }
                 return processChildren()
             case .emphasis:
