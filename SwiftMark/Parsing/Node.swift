@@ -22,7 +22,7 @@ public class Node {
     }
 }
 
-public extension Node {
+extension Node {
     /// The first child if any
     public var child: Node? {
         return children.first

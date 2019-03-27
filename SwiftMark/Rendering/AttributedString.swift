@@ -8,7 +8,7 @@
 
 import Foundation
 
-public extension Node {
+extension Node {
     
     // MARK: - Rendering
     /*-------------------------------------------------------------------------------*/
