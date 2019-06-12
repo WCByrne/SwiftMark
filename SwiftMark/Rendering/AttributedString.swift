@@ -16,7 +16,7 @@ extension Node {
     /// Render the node and it's children as an NSAttributedString
     ///
     /// - Returns: An attributed string that represents the tree starting at the reciever
-    public func attributedString(baseFont: NSFont = NSFont.systemFont(ofSize: 13)) -> NSAttributedString {
+    public func attributedString(baseFont: NSFont = NSFont.systemFont(ofSize: 13), color: NSColor? = nil) -> NSAttributedString {
         struct Font {
             let base: NSFont
             var size: CGFloat?
@@ -24,8 +24,9 @@ extension Node {
             var bold: Bool = false
             var italic: Bool = false
             
-            init(base: NSFont) {
+            init(base: NSFont, color: NSColor?) {
                 self.base = base
+                self.color = color
             }
             
             var traits: NSFontTraitMask {
@@ -44,13 +45,16 @@ extension Node {
                 return f
             }
             var attributes: [NSAttributedString.Key: Any] {
-                return [
+                var attrs: [NSAttributedString.Key: Any] = [
                     .font: self.font
                 ]
+                attrs[.foregroundColor] = self.color
+                return attrs
+
             }
         }
         
-        var font = Font(base: baseFont)
+        var font = Font(base: baseFont, color: color)
         
         func render(node: Node) -> NSAttributedString {
             func processChildren() -> NSMutableAttributedString {
