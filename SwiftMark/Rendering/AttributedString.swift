@@ -8,6 +8,10 @@
 
 import Foundation
 
+public protocol HeadingProvider {
+    func styleForLevel(_ level: Int) -> (CGFloat, Bool)
+}
+
 extension Node {
     
     // MARK: - Rendering
@@ -16,7 +20,7 @@ extension Node {
     /// Render the node and it's children as an NSAttributedString
     ///
     /// - Returns: An attributed string that represents the tree starting at the reciever
-    public func attributedString(baseFont: NSFont = NSFont.systemFont(ofSize: 13), color: NSColor? = nil) -> NSAttributedString {
+    public func attributedString(baseFont: NSFont = NSFont.systemFont(ofSize: 13), color: NSColor? = nil, headingProvider: HeadingProvider? = nil) -> NSAttributedString {
         struct Font {
             let base: NSFont
             var size: CGFloat?
@@ -66,8 +70,14 @@ extension Node {
             
             switch node.type {
             case let .heading(level):
-                font.size = baseFont.pointSize + CGFloat(level * 4)
-                font.bold = true
+                if let provided = headingProvider?.styleForLevel(level) {
+                    font.size = provided.0
+                    font.bold = provided.1
+                } else {
+                    font.size = baseFont.pointSize + CGFloat(level * 4)
+                    font.bold = true
+                }
+
                 defer {
                     font.bold = false
                     font.size = baseFont.pointSize
