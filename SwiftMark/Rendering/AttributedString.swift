@@ -20,17 +20,25 @@ extension Node {
     /// Render the node and it's children as an NSAttributedString
     ///
     /// - Returns: An attributed string that represents the tree starting at the reciever
-    public func attributedString(baseFont: NSFont = NSFont.systemFont(ofSize: 13), color: NSColor? = nil, headingProvider: HeadingProvider? = nil) -> NSAttributedString {
+    public func attributedString(baseFont: NSFont = NSFont.systemFont(ofSize: 13),
+                                 color: NSColor? = nil,
+                                 paragraphStyle: NSParagraphStyle? = nil,
+                                 otherAttributes: [NSAttributedString.Key: Any] = [:],
+                                 headingProvider: HeadingProvider? = nil) -> NSAttributedString {
         struct Font {
             let base: NSFont
             var size: CGFloat?
             var color: NSColor?
             var bold: Bool = false
             var italic: Bool = false
+            var paragraphStyle: NSParagraphStyle?
+            let baseAttributes: [NSAttributedString.Key: Any]
             
-            init(base: NSFont, color: NSColor?) {
+            init(base: NSFont, color: NSColor?, paragraphStyle: NSParagraphStyle?, baseAttributes: [NSAttributedString.Key: Any]) {
                 self.base = base
                 self.color = color
+                self.paragraphStyle = paragraphStyle
+                self.baseAttributes = baseAttributes
             }
             
             var traits: NSFontTraitMask {
@@ -49,16 +57,15 @@ extension Node {
                 return f
             }
             var attributes: [NSAttributedString.Key: Any] {
-                var attrs: [NSAttributedString.Key: Any] = [
-                    .font: self.font
-                ]
+                var attrs = self.baseAttributes
+                attrs[.font] = self.font
                 attrs[.foregroundColor] = self.color
+                attrs[.paragraphStyle] = self.paragraphStyle
                 return attrs
-
             }
         }
         
-        var font = Font(base: baseFont, color: color)
+        var font = Font(base: baseFont, color: color, paragraphStyle: paragraphStyle, baseAttributes: otherAttributes)
         
         func render(node: Node) -> NSAttributedString {
             func processChildren() -> NSMutableAttributedString {
@@ -97,14 +104,29 @@ extension Node {
                 return NSAttributedString(attachment: attachment)
                 
             case let .list(ordered):
+
                 let list = NSMutableAttributedString()
+                guard !node.children.isEmpty else {
+                    return list
+                }
+                let pStyle = font.paragraphStyle
+
+                let listStyle = pStyle?.mutableCopy() as? NSMutableParagraphStyle
+                listStyle?.paragraphSpacing = 0
+                font.paragraphStyle = listStyle
+
                 for (idx, listItem) in node.children.enumerated() {
+//                  Reset the paragraph spacing for the last item
+                    if idx == node.children.count - 1 {
+                        font.paragraphStyle = pStyle
+                    }
                     assert(listItem.type == .listItem, "None list item in list")
-                    let bullet = ordered ? "\(idx + 1). " : "● "
-                    list.append(NSAttributedString(string: bullet))
+                    let bullet = ordered ? "\(idx + 1). " : "• "
+                    list.append(NSAttributedString(string: bullet, attributes: font.attributes))
                     let itemText = render(node: listItem)
                     list.append(itemText)
                 }
+
                 return list
                 
             case let .text(str):
