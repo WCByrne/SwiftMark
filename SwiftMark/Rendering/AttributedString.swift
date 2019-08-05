@@ -8,8 +8,9 @@
 
 import Foundation
 
-public protocol HeadingProvider {
-    func styleForLevel(_ level: Int) -> (CGFloat, Bool)
+public protocol FontProvider {
+    func fontForHeading(ofLevel: Int) -> NSFont
+    func fontFor(ofLevel: Int) -> (NSFont)
 }
 
 extension Node {
@@ -24,7 +25,7 @@ extension Node {
                                  color: NSColor? = nil,
                                  paragraphStyle: NSParagraphStyle? = nil,
                                  otherAttributes: [NSAttributedString.Key: Any] = [:],
-                                 headingProvider: HeadingProvider? = nil) -> NSAttributedString {
+                                 fontProvider: FontProvider? = nil) -> NSAttributedString {
         struct Font {
             let base: NSFont
             var size: CGFloat?
