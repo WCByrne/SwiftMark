@@ -8,8 +8,23 @@
 
 import Foundation
 
+public struct HeadingStyle {
+
+    public enum Weight {
+        case bold
+        case weight(Int)
+    }
+    public let size: CGFloat
+    public let weight: Weight
+
+    public init(size: CGFloat, weight: Weight) {
+        self.size = size
+        self.weight = weight
+    }
+}
+
 public protocol HeadingProvider {
-    func styleForLevel(_ level: Int) -> (CGFloat, Bool)
+    func styleForLevel(_ level: Int) -> HeadingStyle
 }
 
 extension Node {
@@ -31,6 +46,7 @@ extension Node {
             var color: NSColor?
             var bold: Bool = false
             var italic: Bool = false
+            var weight: Int?
             var paragraphStyle: NSParagraphStyle?
             let baseAttributes: [NSAttributedString.Key: Any]
             
@@ -50,8 +66,14 @@ extension Node {
             
             var font: NSFont {
                 let manager = NSFontManager.shared
-                var f = manager.convert(base, toHaveTrait: self.traits)
-                if let s = self.size {
+                var _font: NSFont?
+                var _size = self.size
+                if let weight = self.weight, let fam = base.familyName {
+                    _font = manager.font(withFamily: fam, traits: traits, weight: weight, size: _size ?? base.pointSize)
+                    _size = nil
+                }
+                var f = _font ?? manager.convert(base, toHaveTrait: self.traits)
+                if let s = _size {
                     f = manager.convert(f, toSize: s)
                 }
                 return f
@@ -78,8 +100,11 @@ extension Node {
             switch node.type {
             case let .heading(level):
                 if let provided = headingProvider?.styleForLevel(level) {
-                    font.size = provided.0
-                    font.bold = provided.1
+                    font.size = provided.size
+                    switch provided.weight {
+                    case .bold: font.bold = true
+                    case let .weight(w): font.weight = w
+                    }
                 } else {
                     font.size = baseFont.pointSize + CGFloat(level * 4)
                     font.bold = true
@@ -88,6 +113,7 @@ extension Node {
                 defer {
                     font.bold = false
                     font.size = baseFont.pointSize
+                    font.weight = nil
                 }
                 return processChildren()
             case .emphasis:
@@ -153,7 +179,7 @@ extension Node {
 
 private class HorizontalRuleAttachmentCell: NSTextAttachmentCell {
     override func cellFrame(for textContainer: NSTextContainer, proposedLineFragment lineFrag: NSRect, glyphPosition position: NSPoint, characterIndex charIndex: Int) -> NSRect {
-        return CGRect(x: 0, y: 0, width: lineFrag.size.width, height: 24)
+        return CGRect(x: 0, y: 0, width: lineFrag.size.width, height: 44)
     }
     
     override func draw(withFrame cellFrame: NSRect, in controlView: NSView?) {
