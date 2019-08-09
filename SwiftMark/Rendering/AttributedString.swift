@@ -139,12 +139,16 @@ extension Node {
 
                 let listStyle = pStyle?.mutableCopy() as? NSMutableParagraphStyle
                 listStyle?.paragraphSpacing = 0
+                listStyle?.headIndent = 12
+                listStyle?.firstLineHeadIndent = 10
                 font.paragraphStyle = listStyle
 
                 for (idx, listItem) in node.children.enumerated() {
 //                  Reset the paragraph spacing for the last item
                     if idx == node.children.count - 1 {
-                        font.paragraphStyle = pStyle
+                        let s =  listStyle?.mutableDuplicate()
+                        s?.paragraphSpacing = pStyle?.paragraphSpacing ?? 0
+                        font.paragraphStyle = s
                     }
                     assert(listItem.type == .listItem, "None list item in list")
                     let bullet = ordered ? "\(idx + 1). " : "• "
@@ -152,6 +156,7 @@ extension Node {
                     let itemText = render(node: listItem)
                     list.append(itemText)
                 }
+                font.paragraphStyle = pStyle
 
                 return list
                 

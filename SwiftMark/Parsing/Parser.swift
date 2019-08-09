@@ -92,6 +92,9 @@ open class Parser {
             }
         }
         func openList(ordered: Bool) {
+            if let node = list, case let .list(o) = node.type, o != ordered {
+                closeList()
+            }
             if list == nil {
                 list = Node(type: .list(ordered))
             }

@@ -14,6 +14,12 @@ extension NSAttributedString {
     }
 }
 
+extension NSParagraphStyle {
+    func mutableDuplicate() -> NSMutableParagraphStyle {
+        return self.mutableCopy() as! NSMutableParagraphStyle
+    }
+}
+
 extension String {
     var isRepeatedCharacter: Bool {
         guard let first = self.first else { return false }
