@@ -25,8 +25,10 @@ extension Scanner {
     @discardableResult func scanWhitespace() -> String? {
         let set = CharacterSet.whitespaces
         var temp: NSString?
-        self.scanCharacters(from: set, into: &temp)
-        return temp as String?
+        if self.scanCharacters(from: set, into: &temp) {
+            return temp as String?
+        }
+        return nil
     }
     
     func scanUpToCharacters(from set: CharacterSet) -> String? {
@@ -45,6 +47,16 @@ extension Scanner {
         var temp: NSString?
         self.scanString(string, into: &temp)
         return temp as String?
+    }
+
+    func scanHeading() -> String? {
+        let loc = self.scanLocation
+        guard let mark = self.scanCharacters(in: "#") else { return nil }
+        if self.scanWhitespace() != nil {
+            return mark
+        }
+        self.scanLocation = loc
+        return nil
     }
     
     func scanHRule() -> String? {

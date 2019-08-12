@@ -137,9 +137,8 @@ open class Parser {
                         closeList()
                     }
                     
-                    if features.contains(.headings), let text = scanner.scanCharacters(in: "#") {
+                    if features.contains(.headings), let text = scanner.scanHeading() {
                         stack.append(.heading(text.count))
-                        scanner.scanWhitespace()
                     } else if features.contains(.horizontalRule), scanner.scanHRule() != nil {
                         stack.append(.horizontalRule)
                     } else if features.contains(.unorderedList), scanner.scanUnorderedList() != nil {
