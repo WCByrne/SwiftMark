@@ -139,7 +139,7 @@ extension Node {
 
                 let listStyle = pStyle?.mutableCopy() as? NSMutableParagraphStyle
                 listStyle?.paragraphSpacing = 0
-                listStyle?.headIndent = 12
+                listStyle?.headIndent = 20
                 listStyle?.firstLineHeadIndent = 10
                 font.paragraphStyle = listStyle
 
