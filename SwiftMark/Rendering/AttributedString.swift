@@ -23,6 +23,10 @@ public struct HeadingStyle {
     }
 }
 
+public extension NSAttributedString.Key {
+    static let inlineCode = NSAttributedString.Key("SwiftMarkInlineCode")
+}
+
 public protocol HeadingProvider {
     func styleForLevel(_ level: Int) -> HeadingStyle
 }
@@ -41,14 +45,16 @@ extension Node {
                                  otherAttributes: [NSAttributedString.Key: Any] = [:],
                                  headingProvider: HeadingProvider? = nil) -> NSAttributedString {
         struct Font {
-            let base: NSFont
+            var base: NSFont
             var size: CGFloat?
             var color: NSColor?
             var bold: Bool = false
             var italic: Bool = false
+            var backgroundColor: NSColor?
             var weight: Int?
             var paragraphStyle: NSParagraphStyle?
             let baseAttributes: [NSAttributedString.Key: Any]
+            var customAttributes: [NSAttributedString.Key: Any] = [:]
             
             init(base: NSFont, color: NSColor?, paragraphStyle: NSParagraphStyle?, baseAttributes: [NSAttributedString.Key: Any]) {
                 self.base = base
@@ -83,6 +89,10 @@ extension Node {
                 attrs[.font] = self.font
                 attrs[.foregroundColor] = self.color
                 attrs[.paragraphStyle] = self.paragraphStyle
+                attrs[.backgroundColor] = self.backgroundColor
+                for (k, v) in self.customAttributes {
+                    attrs[k] = v
+                }
                 return attrs
             }
         }
@@ -167,6 +177,53 @@ extension Node {
                 result.addAttributes([.strikethroughStyle: NSUnderlineStyle.single.rawValue],
                                      range: result.range)
                 return result
+
+            case let .blockQuote(level):
+
+                font.size = 16
+                font.color = NSColor.lightGray
+
+                let pStyle = font.paragraphStyle
+                let tempStyle = pStyle?.mutableCopy() as? NSMutableParagraphStyle ?? NSMutableParagraphStyle()
+                tempStyle.textBlocks = [
+                    QuoteBlock(level: level, levelInset: 24, border: (3, NSColor.red), background: nil)
+                ]
+                tempStyle.paragraphSpacingBefore = 4
+                font.paragraphStyle = tempStyle
+
+                defer {
+                    font.paragraphStyle = pStyle
+                }
+                return processChildren()
+
+            case .inlineCode:
+                let _font = font.base
+                font.customAttributes[.inlineCode] = true
+                if let f = NSFont(name: "SFMono-Regular", size: 14) {
+                    font.base = f
+                }
+                defer {
+                    font.customAttributes[.inlineCode] = nil
+                    font.base = _font
+                    font.backgroundColor = nil
+                }
+                return processChildren()
+
+            case .codeBlock:
+                let pStyle = font.paragraphStyle
+
+                let tempStyle = pStyle?.mutableCopy() as? NSMutableParagraphStyle ?? NSMutableParagraphStyle()
+                tempStyle.textBlocks = [
+                    CodeBlock(title: "", background: NSColor.lightGray, border: (1, NSColor.darkGray))
+                ]
+                tempStyle.paragraphSpacingBefore = 4
+                font.paragraphStyle = tempStyle
+
+                defer {
+                    font.paragraphStyle = pStyle
+                }
+                return processChildren()
+
             case let .link(title, url):
                 var attrs = font.attributes
                 attrs[.underlineStyle] = NSUnderlineStyle.single.rawValue
@@ -195,5 +252,136 @@ private class HorizontalRuleAttachmentCell: NSTextAttachmentCell {
         inset.size.height = 1
         inset.size.width -= 20
         inset.fill()
+    }
+}
+
+class QuoteBlock: NSTextBlock {
+
+    private let level: Int
+    private let border: (CGFloat, NSColor)
+    private let background: NSColor?
+    private let levelInset: CGFloat
+
+    init(level: Int, levelInset: CGFloat, border: (CGFloat, NSColor), background: NSColor?) {
+        self.level = level
+        self.border = border
+        self.background = background
+        self.levelInset = levelInset
+        super.init()
+
+        let level = max(CGFloat(level), 1)
+        self.setWidth(levelInset * level, type: .absoluteValueType, for: .padding)
+        self.setWidth(4, type: .absoluteValueType, for: .padding, edge: .minY)
+        self.setWidth(4, type: .absoluteValueType, for: .padding, edge: .maxY)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        self.level = 0
+        self.border = (4, NSColor.controlColor)
+        self.background = nil
+        self.levelInset = 8
+        super.init(coder: aDecoder)
+    }
+
+    override func boundsRect(forContentRect contentRect: NSRect, in rect: NSRect, textContainer: NSTextContainer, characterRange charRange: NSRange) -> NSRect {
+        return super.boundsRect(forContentRect: contentRect, in: rect, textContainer: textContainer, characterRange: charRange)
+    }
+
+    override func rectForLayout(at startingPoint: NSPoint, in rect: NSRect, textContainer: NSTextContainer, characterRange charRange: NSRange) -> NSRect {
+        var res = super.rectForLayout(at: startingPoint, in: rect, textContainer: textContainer, characterRange: charRange)
+        res.size.width = rect.size.width
+        return res
+    }
+
+    override func drawBackground(withFrame frameRect: NSRect, in controlView: NSView, characterRange charRange: NSRange, layoutManager: NSLayoutManager) {
+
+        let adjustedFrame = CGRect(x: frameRect.origin.x,
+                                   y: frameRect.origin.y + 2,
+                                   width: controlView.frame.size.width - (frameRect.origin.x * 2),
+                                   height: frameRect.size.height - 2)
+
+        super.drawBackground(withFrame: adjustedFrame, in: controlView, characterRange: charRange, layoutManager: layoutManager)
+
+        if let bg = self.background {
+            let path = NSBezierPath(roundedRect: adjustedFrame, xRadius: 5, yRadius: 5)
+            bg.setFill()
+            path.fill()
+        }
+
+        self.border.1.setStroke()
+        let offset = self.border.0/2
+        for idx in 0..<self.level {
+            let path = NSBezierPath()
+            //            path.lineCapStyle
+
+            path.lineWidth = self.border.0
+            let x = offset + adjustedFrame.origin.x + (CGFloat(idx) * self.levelInset)
+            path.move(to: CGPoint(x: x, y: adjustedFrame.minY))
+            path.line(to: CGPoint(x: x, y: adjustedFrame.maxY))
+
+            path.stroke()
+        }
+    }
+}
+
+class CodeBlock: NSTextBlock {
+
+    let titleFont = NSFont.boldSystemFont(ofSize: 11)
+    let title: String?
+
+    init(title: String? = nil, background: NSColor, border: (CGFloat, NSColor)?) {
+        self.title = title?.isEmpty != false ? nil : title
+        super.init()
+
+        self.setWidth(8, type: .absoluteValueType, for: .padding)
+        self.setWidth(self.title == nil ? 4 : 20, type: .absoluteValueType, for: .padding, edge: .minY)
+        self.setWidth(4, type: .absoluteValueType, for: .padding, edge: .maxY)
+
+        self.backgroundColor = background
+        if let b = border {
+            self.setBorderColor(b.1, for: .minX)
+            self.setWidth(b.0, type: .absoluteValueType, for: .border)
+        }
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        self.title = nil
+        super.init(coder: aDecoder)
+    }
+
+    private var origin = CGPoint.zero
+    override func rectForLayout(at startingPoint: NSPoint, in rect: NSRect, textContainer: NSTextContainer, characterRange charRange: NSRange) -> NSRect {
+        self.origin = startingPoint
+        var res = super.rectForLayout(at: startingPoint, in: rect, textContainer: textContainer, characterRange: charRange)
+        //        res.origin.y = startingPoint.y
+        res.size.width = rect.size.width
+        return res
+    }
+
+    override func drawBackground(withFrame frameRect: NSRect, in controlView: NSView, characterRange charRange: NSRange, layoutManager: NSLayoutManager) {
+
+        let x = frameRect.origin.x
+
+        if let title = self.title {
+            let adjustedFrame = CGRect(x: x,
+                                       y: frameRect.origin.y + 4,
+                                       width: controlView.frame.size.width - (x * 2),
+                                       height: frameRect.size.height)
+            super.drawBackground(withFrame: adjustedFrame, in: controlView, characterRange: charRange, layoutManager: layoutManager)
+
+            let drawPoint = CGPoint(x: adjustedFrame.origin.x + 12, y: adjustedFrame.origin.y + 4)
+            let drawString = NSString(string: title)
+            let attributes = [NSAttributedString.Key.font: self.titleFont,
+                              NSAttributedString.Key.foregroundColor: NSColor.placeholderTextColor]
+            drawString.draw(at: drawPoint, withAttributes: attributes)
+        }
+        else {
+            let adjustedFrame = CGRect(x: x,
+                                       y: frameRect.origin.y + 4,
+                                       width: controlView.frame.size.width - (x * 2),
+                                       height: frameRect.size.height)
+            super.drawBackground(withFrame: adjustedFrame, in: controlView, characterRange: charRange, layoutManager: layoutManager)
+        }
+
     }
 }
