@@ -23,12 +23,42 @@ public struct HeadingStyle {
     }
 }
 
+public struct BlockQuoteStyle {
+    let textColor: NSColor?
+    let borderColor: NSColor
+    let borderWidth: CGFloat
+    let insets: NSEdgeInsets
+    let size: CGFloat?
+    let bold: Bool
+    let backgroundColor: NSColor?
+    
+    public init(textColor: NSColor? = nil, borderColor: NSColor = NSColor.red, borderWidth: CGFloat = 3, background: NSColor? = nil, insets: NSEdgeInsets = NSEdgeInsets(top: 4, left: 24, bottom: 4, right: 4), size: CGFloat? = nil, bold: Bool = false) {
+        self.textColor = textColor
+        self.borderColor = borderColor
+        self.borderWidth = borderWidth
+        self.insets = insets
+        self.size = size
+        self.bold = bold
+        self.backgroundColor = background
+    }
+}
+
 public extension NSAttributedString.Key {
     static let inlineCode = NSAttributedString.Key("SwiftMarkInlineCode")
 }
 
-public protocol HeadingProvider {
-    func styleForLevel(_ level: Int) -> HeadingStyle
+public protocol AttributedStringRenderer {
+    func styleForLevel(_ level: Int) -> HeadingStyle?
+    func blockQuoteStyle() -> BlockQuoteStyle
+}
+
+extension AttributedStringRenderer {
+    func styleForLevel(_ level: Int) -> HeadingStyle? {
+        return nil
+    }
+    func blockQuoteStyle() -> BlockQuoteStyle {
+        return BlockQuoteStyle(borderColor: NSColor.red)
+    }
 }
 
 extension Node {
@@ -43,7 +73,8 @@ extension Node {
                                  color: NSColor? = nil,
                                  paragraphStyle: NSParagraphStyle? = nil,
                                  otherAttributes: [NSAttributedString.Key: Any] = [:],
-                                 headingProvider: HeadingProvider? = nil) -> NSAttributedString {
+                                 renderer: AttributedStringRenderer? = nil) -> NSAttributedString {
+        
         struct Font {
             var base: NSFont
             var size: CGFloat?
@@ -109,7 +140,7 @@ extension Node {
             
             switch node.type {
             case let .heading(level):
-                if let provided = headingProvider?.styleForLevel(level) {
+                if let provided = renderer?.styleForLevel(level) {
                     font.size = provided.size
                     switch provided.weight {
                     case .bold: font.bold = true
@@ -179,19 +210,28 @@ extension Node {
                 return result
 
             case let .blockQuote(level):
+                
+                let style = renderer?.blockQuoteStyle() ?? BlockQuoteStyle()
 
-                font.size = 16
-                font.color = NSColor(white: 0.6, alpha: 1)
+                font.size = style.size
+                font.color = style.textColor
+                font.bold = style.bold
 
                 let pStyle = font.paragraphStyle
                 let tempStyle = pStyle?.mutableCopy() as? NSMutableParagraphStyle ?? NSMutableParagraphStyle()
                 tempStyle.textBlocks = [
-                    QuoteBlock(level: level, levelInset: 24, border: (3, NSColor.red), background: nil)
+                    QuoteBlock(level: level,
+                               insets: style.insets,
+                               border: (style.borderWidth, style.borderColor),
+                               background: style.backgroundColor)
                 ]
                 tempStyle.paragraphSpacingBefore = 4
                 font.paragraphStyle = tempStyle
 
                 defer {
+                    font.size = nil
+                    font.color = nil
+                    font.bold = false
                     font.paragraphStyle = pStyle
                 }
                 return processChildren()
@@ -259,26 +299,26 @@ class QuoteBlock: NSTextBlock {
     private let level: Int
     private let border: (CGFloat, NSColor)
     private let background: NSColor?
-    private let levelInset: CGFloat
+    private let insets: NSEdgeInsets
 
-    init(level: Int, levelInset: CGFloat, border: (CGFloat, NSColor), background: NSColor?) {
+    init(level: Int, insets: NSEdgeInsets, border: (CGFloat, NSColor), background: NSColor?) {
         self.level = level
         self.border = border
         self.background = background
-        self.levelInset = levelInset
+        self.insets = insets
         super.init()
 
         let level = max(CGFloat(level), 1)
-        self.setWidth(levelInset * level, type: .absoluteValueType, for: .padding)
-        self.setWidth(4, type: .absoluteValueType, for: .padding, edge: .minY)
-        self.setWidth(4, type: .absoluteValueType, for: .padding, edge: .maxY)
+        self.setWidth(insets.left * level, type: .absoluteValueType, for: .padding)
+        self.setWidth(insets.top, type: .absoluteValueType, for: .padding, edge: .minY)
+        self.setWidth(insets.bottom, type: .absoluteValueType, for: .padding, edge: .maxY)
     }
 
     required init?(coder aDecoder: NSCoder) {
         self.level = 0
         self.border = (4, NSColor.controlColor)
         self.background = nil
-        self.levelInset = 8
+        self.insets = NSEdgeInsetsZero
         super.init(coder: aDecoder)
     }
 
@@ -313,10 +353,8 @@ class QuoteBlock: NSTextBlock {
         let offset = self.border.0/2
         for idx in 0..<self.level {
             let path = NSBezierPath()
-            //            path.lineCapStyle
-
             path.lineWidth = self.border.0
-            let x = offset + adjustedFrame.origin.x + (CGFloat(idx) * self.levelInset)
+            let x = offset + adjustedFrame.origin.x + (CGFloat(idx) * self.insets.left)
             path.move(to: CGPoint(x: x, y: adjustedFrame.minY))
             path.line(to: CGPoint(x: x, y: adjustedFrame.maxY))
 
