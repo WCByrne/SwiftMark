@@ -181,7 +181,7 @@ extension Node {
             case let .blockQuote(level):
 
                 font.size = 16
-                font.color = NSColor.lightGray
+                font.color = NSColor(white: 0.6, alpha: 1)
 
                 let pStyle = font.paragraphStyle
                 let tempStyle = pStyle?.mutableCopy() as? NSMutableParagraphStyle ?? NSMutableParagraphStyle()
@@ -205,7 +205,6 @@ extension Node {
                 defer {
                     font.customAttributes[.inlineCode] = nil
                     font.base = _font
-                    font.backgroundColor = nil
                 }
                 return processChildren()
 
@@ -301,6 +300,8 @@ class QuoteBlock: NSTextBlock {
                                    height: frameRect.size.height - 2)
 
         super.drawBackground(withFrame: adjustedFrame, in: controlView, characterRange: charRange, layoutManager: layoutManager)
+        
+        NSGraphicsContext.saveGraphicsState()
 
         if let bg = self.background {
             let path = NSBezierPath(roundedRect: adjustedFrame, xRadius: 5, yRadius: 5)
@@ -321,6 +322,7 @@ class QuoteBlock: NSTextBlock {
 
             path.stroke()
         }
+        NSGraphicsContext.restoreGraphicsState()
     }
 }
 
