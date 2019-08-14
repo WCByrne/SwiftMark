@@ -128,6 +128,11 @@ open class Parser {
                 if isNewline {
                     if features.contains(.blockQuote), let text = scanner.scanCharacters(in: "> ") {
                         let level = text.filter { return $0 == ">" }.count
+                        
+                        if let node = quote, case let .blockQuote(l) = node.type, l != level {
+                            closeQuote()
+                        }
+                        
                         // Check if we are already in a block
                         if quote == nil {
                             quote = Node(type: .blockQuote(level))
