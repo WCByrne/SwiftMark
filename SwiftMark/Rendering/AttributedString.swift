@@ -348,6 +348,12 @@ class QuoteBlock: NSTextBlock {
             bg.setFill()
             path.fill()
         }
+        
+        var maxY = adjustedFrame.maxY
+        let lastCharRange = NSRange(location: charRange.location + charRange.length - 1, length: 1)
+        if layoutManager.attributedString().attributedSubstring(from: lastCharRange).string == "\n" {
+            maxY -= 7
+        }
 
         self.border.1.setStroke()
         let offset = self.border.0/2
@@ -356,8 +362,7 @@ class QuoteBlock: NSTextBlock {
             path.lineWidth = self.border.0
             let x = offset + adjustedFrame.origin.x + (CGFloat(idx) * self.insets.left)
             path.move(to: CGPoint(x: x, y: adjustedFrame.minY))
-            path.line(to: CGPoint(x: x, y: adjustedFrame.maxY))
-
+            path.line(to: CGPoint(x: x, y: maxY))
             path.stroke()
         }
         NSGraphicsContext.restoreGraphicsState()
