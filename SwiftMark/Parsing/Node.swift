@@ -29,6 +29,29 @@ extension Node {
     }
 }
 
+extension Node {
+    func reduceText() {
+        var join: String?
+        var reduced = self.children.reduce(into: [Node]()) { (res, node) in
+            switch node.type {
+            case let .text(str):
+                join = (join ?? "") + str
+            default:
+                if let str = join {
+                    res.append(Node(type: .text(str)))
+                    join = nil
+                }
+                node.reduceText()
+                res.append(node)
+            }
+        }
+        if let str = join {
+            reduced.append(Node(type: .text(str)))
+        }
+        self.children = reduced
+    }
+}
+
 extension Node: CustomDebugStringConvertible {
     /// :nodoc:
     public var debugDescription: String {

@@ -210,7 +210,6 @@ extension Node {
                 return result
 
             case let .blockQuote(level):
-                
                 let style = renderer?.blockQuoteStyle() ?? BlockQuoteStyle()
 
                 font.size = style.size

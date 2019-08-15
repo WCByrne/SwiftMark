@@ -197,7 +197,6 @@ open class Parser {
                 if let text = scanner.scanUpToCharacters(from: markCharacters) {
                     stack.append(.text(text))
                 } else if features.contains(.inlineCode), let codeFence = scanner.scanInlineCode() {
-                    
                     print("CODE FENCE : \(codeFence) -- \(scanner.scanLocation)")
                     if let code = scanner.scanUpToString("`") {
                         _ = scanner.scanString("`")
@@ -259,6 +258,8 @@ open class Parser {
                     }
                     commitLast()
                     stack.append(contentsOf: marks.map { return nodeType(for: $0) })
+                } else if let str = scanner.scanCharacters(from: markCharacters) {
+                    stack.append(NodeType.text(str))
                 }
                 if scanner.isAtEnd { break }
                 isNewline = false
@@ -335,7 +336,6 @@ open class Parser {
                             print("Found closing code block")
                             let code = nodes(upTo: close)
                                 .compactMap { return $0.type.asText }
-                                .reducingText()
                                 .map { return Node(type: $0) }
                             res.append(Node(type: current, children: code))
                         } else if let txt = current.asText {
@@ -377,6 +377,8 @@ open class Parser {
         if document.children.last?.type == .text("\n") {
             _ = document.children.popLast()
         }
+
+        document.reduceText()
         return document
     }
 }

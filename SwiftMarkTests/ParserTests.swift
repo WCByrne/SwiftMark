@@ -32,8 +32,7 @@ class ParserTests: XCTestCase {
         XCTAssertEqual(doc.children.count, 1)
         let strong = doc.children[0]
         XCTAssertEqual(strong.type, .strong("__"))
-        XCTAssertEqual(strong.children[0].type, .text("_"))
-        XCTAssertEqual(strong.children[1].type, .text("Bold"))
+        XCTAssertEqual(strong.children[0].type, .text("_Bold"))
     }
     func testBold_extraTrailingMark() {
         let doc = parse("__Bold___")
@@ -179,42 +178,19 @@ class ParserTests: XCTestCase {
     
     func testMultipleNewlines_standrd() {
         let doc = self.parse(newlineTestString)
-        let lines = doc.children
-        let expected = [
-            "Line one\n",
-            "\n",
-            "Line two\n",
-            "\n",
-            "Line three"
-        ]
-        if lines.count == expected.count {
-            for idx in 0..<lines.count {
-                XCTAssertEqual(lines[idx].type, .text(expected[idx]))
-            }
-        } else {
-            XCTFail("line count does not match expected line count")
-        }
+        let expected = """
+        Line one
+
+        Line two
+
+        Line three
+        """
+        XCTAssertEqual(doc.children[0].type, .text(expected))
     }
 
     func testMultipleNewlines_allow() {
         let doc = self.parse(newlineTestString, features: .all)
-        let lines = doc.children
-        let expected = [
-        "Line one\n",
-        "\n",
-        "Line two\n",
-        "\n",
-        "\n",
-        "\n",
-        "Line three"
-        ]
-        if lines.count == expected.count {
-            for idx in 0..<lines.count {
-                XCTAssertEqual(lines[idx].type, .text(expected[idx]))
-            }
-        } else {
-            XCTFail("line count does not match expected line count")
-        }
+        XCTAssertEqual(doc.children[0].type, .text(newlineTestString))
     }
     
     // List newline padding
@@ -228,11 +204,10 @@ class ParserTests: XCTestCase {
         * List item
         more text
         """)
-        XCTAssertEqual(doc.children[0].type, .text("Text\n"))
-        XCTAssertEqual(doc.children[1].type, .text("\n"))
-        XCTAssertEqual(doc.children[2].type, .list(false))
-        XCTAssertEqual(doc.children[2].child?.type, .listItem)
-        XCTAssertEqual(doc.children[3].type, .text("more text"))
+        XCTAssertEqual(doc.children[0].type, .text("Text\n\n"))
+        XCTAssertEqual(doc.children[1].type, .list(false))
+        XCTAssertEqual(doc.children[1].child?.type, .listItem)
+        XCTAssertEqual(doc.children[2].type, .text("more text"))
     }
     
     func testListWithNewlineAfter() {
@@ -245,8 +220,7 @@ class ParserTests: XCTestCase {
         XCTAssertEqual(doc.children[0].type, .text("Text\n"))
         XCTAssertEqual(doc.children[1].type, .list(false))
         XCTAssertEqual(doc.children[1].child?.type, .listItem)
-        XCTAssertEqual(doc.children[2].type, .text("\n"))
-        XCTAssertEqual(doc.children[3].type, .text("more text"))
+        XCTAssertEqual(doc.children[2].type, .text("\nmore text"))
     }
     
     func testInlineCode() {
@@ -291,6 +265,18 @@ class ParserTests: XCTestCase {
         print(doc)
         XCTAssertEqual(doc.children[0].type, .codeBlock)
         XCTAssertEqual(doc.children[0].child?.type, .text("\nthis is code\n"))
+    }
+
+    func testCodeBlock_disabled() {
+        let str = """
+            Use this code for things
+            ```
+            This is code
+            ```
+            """
+        let doc = parse(str, features: [.inlineCode])
+        print(doc)
+        XCTAssertEqual(doc.children[0].type, .text(str))
     }
     
 }
