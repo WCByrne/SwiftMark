@@ -153,7 +153,6 @@ open class Parser {
                     }
 //
                     if let block = codeBlock {
-                        print(_line)
                         block.children.append(Node(type: .text(_line)))
                         break
                     }
@@ -193,16 +192,13 @@ open class Parser {
                 
                 let markCharacters = CharacterSet(charactersIn: "*_-~`[\\")
                 let nonCodeMarks = CharacterSet(charactersIn: "*_-~[\\")
-                print("Location : -- \(scanner.scanLocation)")
                 if let text = scanner.scanUpToCharacters(from: markCharacters) {
                     stack.append(.text(text))
                 } else if features.contains(.inlineCode), let codeFence = scanner.scanInlineCode() {
-                    print("CODE FENCE : \(codeFence) -- \(scanner.scanLocation)")
                     if let code = scanner.scanUpToString("`") {
                         _ = scanner.scanString("`")
                         stack.append(.inlineCode)
                         stack.append(.text(code))
-                        print("CODE: \(code)")
                         stack.append(.inlineCode)
                     } else {
                         stack.append(.text(codeFence))
@@ -268,8 +264,7 @@ open class Parser {
             if !isLastLine && !skipNewline {
                 stack.append(NodeType.text("\n"))
             }
-            
-            print(stack)
+
             stack = stack.reducingText()
             
             var cursor = 0
@@ -288,7 +283,6 @@ open class Parser {
                 while cursor < end {
                     let current = stack[cursor]
                     cursor += 1
-                    print("current: \(current)")
                     switch current {
                     case .text:
                         res.append(Node(type: current))
@@ -319,21 +313,8 @@ open class Parser {
                         }  else if let txt = current.asText {
                             res.append(Node(type: txt))
                         }
-//                    case .inlineCode:
-//                        if let close = next(indexOf: current) {
-//                            print("Found closing inline code mark")
-//                            let code = nodes(upTo: close)
-//                                .compactMap { return $0.type.asText }
-//                                .reducingText()
-//                                .map { return Node(type: $0) }
-//                            res.append(Node(type: current, children: code))
-//                        } else if let txt = current.asText {
-//                            res.append(Node(type: txt))
-//                        }
                     case .codeBlock:
-                        print("Found code block")
                         if let close = next(indexOf: current) {
-                            print("Found closing code block")
                             let code = nodes(upTo: close)
                                 .compactMap { return $0.type.asText }
                                 .map { return Node(type: $0) }
