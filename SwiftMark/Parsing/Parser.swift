@@ -43,7 +43,6 @@ open class Parser {
         
         // This should be replaced by scanning the newlines but this was a quick hack
         let lines = self.markdown.components(separatedBy: .newlines)
-        let markCharacters = CharacterSet(charactersIn: "*_-#>~`[\\")
         var document = Node(type: .document)
         
         var wasNewline = false
@@ -78,6 +77,8 @@ open class Parser {
         var quote: Node?
         var code: Node?
         var list: Node?
+        var codeBlock: Node?
+        var skipNewline: Bool = false
         
         func closeList() {
             if let l = list {
@@ -100,7 +101,24 @@ open class Parser {
             }
         }
         
+        func openCodeBlock() {
+            if codeBlock == nil {
+                codeBlock = Node(type: .codeBlock)
+            }
+        }
+        func closeCodeBlock() {
+            if let block = codeBlock {
+                block.children = block.children
+                    .compactMap { $0.type.asText }
+                    .reducingText()
+                    .map { Node(type: $0) }
+                (quote ?? document).children.append(block)
+                quote = nil
+            }
+        }
+        
         for (lineIndex, _line) in lines.enumerated() {
+            skipNewline = false
             let isLastLine = lineIndex == lines.count - 1
             isNewline = true
             let line = _line.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
@@ -110,7 +128,7 @@ open class Parser {
             var stack = [NodeType]()
             
             func append(newNodes: [Node]) {
-                (quote ?? document).children.append(contentsOf: newNodes)
+                (codeBlock ?? quote ?? document).children.append(contentsOf: newNodes)
             }
             
             if line.isEmpty {
@@ -126,6 +144,20 @@ open class Parser {
             
             while true {
                 if isNewline {
+                    
+                    if features.contains(.codeBlock), _line == "```" {
+                        if codeBlock == nil { openCodeBlock() }
+                        else { closeCodeBlock() }
+                        skipNewline = true
+                        break
+                    }
+//
+                    if let block = codeBlock {
+                        print(_line)
+                        block.children.append(Node(type: .text(_line)))
+                        break
+                    }
+                    
                     if features.contains(.blockQuote), let text = scanner.scanCharacters(in: "> ") {
                         let level = text.filter { return $0 == ">" }.count
                         
@@ -158,10 +190,26 @@ open class Parser {
                         closeList()
                     }
                 }
+                
+                let markCharacters = CharacterSet(charactersIn: "*_-~`[\\")
+                let nonCodeMarks = CharacterSet(charactersIn: "*_-~[\\")
+                print("Location : -- \(scanner.scanLocation)")
                 if let text = scanner.scanUpToCharacters(from: markCharacters) {
                     stack.append(.text(text))
+                } else if features.contains(.inlineCode), let codeFence = scanner.scanInlineCode() {
+                    
+                    print("CODE FENCE : \(codeFence) -- \(scanner.scanLocation)")
+                    if let code = scanner.scanUpToString("`") {
+                        _ = scanner.scanString("`")
+                        stack.append(.inlineCode)
+                        stack.append(.text(code))
+                        print("CODE: \(code)")
+                        stack.append(.inlineCode)
+                    } else {
+                        stack.append(.text(codeFence))
+                    }
                 }
-                else if let markText = scanner.scanCharacters(from: markCharacters) {
+                else if let markText = scanner.scanCharacters(from: nonCodeMarks) {
                     var marks = [String]()
                     var last: String = ""
                     func commitLast() {
@@ -216,9 +264,11 @@ open class Parser {
                 isNewline = false
             }
             
-            if !isLastLine {
+            if !isLastLine && !skipNewline {
                 stack.append(NodeType.text("\n"))
             }
+            
+            print(stack)
             stack = stack.reducingText()
             
             var cursor = 0
@@ -237,7 +287,7 @@ open class Parser {
                 while cursor < end {
                     let current = stack[cursor]
                     cursor += 1
-                    
+                    print("current: \(current)")
                     switch current {
                     case .text:
                         res.append(Node(type: current))
@@ -268,6 +318,30 @@ open class Parser {
                         }  else if let txt = current.asText {
                             res.append(Node(type: txt))
                         }
+//                    case .inlineCode:
+//                        if let close = next(indexOf: current) {
+//                            print("Found closing inline code mark")
+//                            let code = nodes(upTo: close)
+//                                .compactMap { return $0.type.asText }
+//                                .reducingText()
+//                                .map { return Node(type: $0) }
+//                            res.append(Node(type: current, children: code))
+//                        } else if let txt = current.asText {
+//                            res.append(Node(type: txt))
+//                        }
+                    case .codeBlock:
+                        print("Found code block")
+                        if let close = next(indexOf: current) {
+                            print("Found closing code block")
+                            let code = nodes(upTo: close)
+                                .compactMap { return $0.type.asText }
+                                .reducingText()
+                                .map { return Node(type: $0) }
+                            res.append(Node(type: current, children: code))
+                        } else if let txt = current.asText {
+                            res.append(Node(type: txt))
+                        }
+                        
                     case let .emphasis(mark):
                         let char = "\(mark.first!)"
                         if let close = next(indexOf: current) {

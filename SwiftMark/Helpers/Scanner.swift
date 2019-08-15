@@ -59,6 +59,26 @@ extension Scanner {
         return nil
     }
     
+    func scanInlineCode() -> String? {
+        let loc = self.scanLocation
+        guard let mark = self.scanCharacters(in: "`") else { return nil }
+        if mark.count == 1 {
+            return mark
+        }
+        self.scanLocation = loc
+        return nil
+    }
+    
+    func scanCodeBlockFence() -> String? {
+        let loc = self.scanLocation
+        guard let mark = self.scanCharacters(in: "`") else { return nil }
+        if mark.count >= 3 {
+            return mark
+        }
+        self.scanLocation = loc
+        return nil
+    }
+    
     func scanHRule() -> String? {
         let loc = self.scanLocation
         guard let mark = self.scanCharacters(in: "-") else { return nil }

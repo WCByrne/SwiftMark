@@ -249,4 +249,48 @@ class ParserTests: XCTestCase {
         XCTAssertEqual(doc.children[3].type, .text("more text"))
     }
     
+    func testInlineCode() {
+        let doc = parse("This is `code`")
+        XCTAssertEqual(doc.children[0].type, .text("This is "))
+        XCTAssertEqual(doc.children[1].type, .inlineCode)
+        XCTAssertEqual(doc.children[1].child?.type, .text("code"))
+    }
+    
+    func testInlineCodeEscapes() {
+        let doc = parse("This is `*code*`")
+        XCTAssertEqual(doc.children[0].type, .text("This is "))
+        XCTAssertEqual(doc.children[1].type, .inlineCode)
+        XCTAssertEqual(doc.children[1].child?.type, .text("*code*"))
+    }
+    
+    func testBoldInlineCode() {
+        let doc = parse("This is **`code`**")
+        print(doc)
+        XCTAssertEqual(doc.children[0].type, .text("This is "))
+        XCTAssertEqual(doc.children[1].type, .strong("**"))
+        XCTAssertEqual(doc.children[1].child?.type, .inlineCode)
+        XCTAssertEqual(doc.children[1].child?.child?.type, .text("code"))
+    }
+    
+    func testCodeBlock() {
+        let doc = parse("```\nthis is code\n```")
+        print(doc)
+        XCTAssertEqual(doc.children[0].type, .codeBlock)
+        XCTAssertEqual(doc.children[0].child?.type, .text("this is code\n"))
+    }
+    
+    func testCodeBlockReduceText() {
+        let doc = parse("```\nthis is code\nwith multiple lines\n```")
+        print(doc)
+        XCTAssertEqual(doc.children[0].type, .codeBlock)
+        XCTAssertEqual(doc.children[0].child?.type, .text("this is code\nwith multiple lines\n"))
+    }
+    
+    func testCodeBlockPreserveNewlines() {
+        let doc = parse("```\n\nthis is code\n```")
+        print(doc)
+        XCTAssertEqual(doc.children[0].type, .codeBlock)
+        XCTAssertEqual(doc.children[0].child?.type, .text("\nthis is code\n"))
+    }
+    
 }

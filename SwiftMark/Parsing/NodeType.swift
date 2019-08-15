@@ -42,6 +42,7 @@ public enum NodeType: Equatable {
 }
 
 extension NodeType {
+    
     var asText: NodeType? {
         switch self {
         case .document: return nil
@@ -50,7 +51,7 @@ extension NodeType {
         case .list: return nil
         case .listItem: return nil
         case .horizontalRule: return nil
-        case .inlineCode: return nil
+        case .inlineCode: return .text("`")
         case .codeBlock: return nil
         case .blockQuote: return nil
         case let .emphasis(str): return .text(str)
