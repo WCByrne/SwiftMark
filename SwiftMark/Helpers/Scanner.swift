@@ -52,7 +52,7 @@ extension Scanner {
     func scanHeading() -> String? {
         let loc = self.scanLocation
         guard let mark = self.scanCharacters(in: "#") else { return nil }
-        if self.scanWhitespace() != nil {
+        if mark.count <= 6 && self.scanWhitespace() != nil {
             return mark
         }
         self.scanLocation = loc
