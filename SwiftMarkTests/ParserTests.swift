@@ -36,7 +36,6 @@ class ParserTests: XCTestCase {
     }
     func testBold_extraTrailingMark() {
         let doc = parse("__Bold___")
-        print(doc.children)
         XCTAssertEqual(doc.children.count, 2)
         XCTAssertEqual(doc.children[0].type, .strong("__"))
         XCTAssertEqual(doc.children[0].child?.type, .text("Bold"))
@@ -56,36 +55,19 @@ class ParserTests: XCTestCase {
     
     func testItalic_extraLeadingMark() {
         let doc = parse("__Italic_")
-        print(doc.children)
         XCTAssertEqual(doc.children.count, 2)
         XCTAssertEqual(doc.children[0].type, .text("_"))
         XCTAssertEqual(doc.children[1].type, .emphasis("_"))
     }
     func testItalic_extraTrailingMark() {
         let doc = parse("_Italic__")
-        print(doc.children)
         XCTAssertEqual(doc.children.count, 2)
         XCTAssertEqual(doc.children[0].type, .emphasis("_"))
         XCTAssertEqual(doc.children[1].type, .text("_"))
     }
-
-//    func testBoldItalic_underscore() {
-//        let doc = parse("___BoldItalic___")
-//        print(doc.children)
-//        XCTAssertEqual(doc.children.count, 1)
-//        guard let strong = doc.child,
-//            let emph = strong.child else {
-//                XCTFail("Failed to parse nested bold/italic")
-//                return
-//        }
-//        XCTAssertEqual(emph.type, .emphasis("_"))
-//        XCTAssertEqual(strong.type, .strong("__"))
-//        XCTAssertEqual(emph.child?.type, .text("BoldItalic"))
-//    }
     
     func testBoldItalic_astriskUnderscore() {
         let doc = parse("*__BoldItalic__*")
-        print(doc.children)
         XCTAssertEqual(doc.children.count, 1)
         let emph = doc.children[0]
         let bold = emph.children[0]
@@ -160,6 +142,17 @@ class ParserTests: XCTestCase {
         XCTAssertEqual(items[0].child?.child?.type, .text("Italic list item"))
         XCTAssertEqual(items[1].child?.type, .strong("**"))
         XCTAssertEqual(items[1].child?.child?.type, .text("Bold list item"))
+    }
+    
+    func testListFollowedByBlockquote() {
+        let str = """
+        1. one
+        2. two
+        > quote
+        """
+        let doc = parse(str)
+        XCTAssertEqual(doc.children[0].type, .list(true))
+        XCTAssertEqual(doc.children[1].type, .blockQuote(1))
     }
     
     // MARK: - Multiple Newline
@@ -239,7 +232,6 @@ class ParserTests: XCTestCase {
     
     func testBoldInlineCode() {
         let doc = parse("This is **`code`**")
-        print(doc)
         XCTAssertEqual(doc.children[0].type, .text("This is "))
         XCTAssertEqual(doc.children[1].type, .strong("**"))
         XCTAssertEqual(doc.children[1].child?.type, .inlineCode)
@@ -248,21 +240,18 @@ class ParserTests: XCTestCase {
     
     func testCodeBlock() {
         let doc = parse("```\nthis is code\n```")
-        print(doc)
         XCTAssertEqual(doc.children[0].type, .codeBlock)
         XCTAssertEqual(doc.children[0].child?.type, .text("this is code\n"))
     }
     
     func testCodeBlockReduceText() {
         let doc = parse("```\nthis is code\nwith multiple lines\n```")
-        print(doc)
         XCTAssertEqual(doc.children[0].type, .codeBlock)
         XCTAssertEqual(doc.children[0].child?.type, .text("this is code\nwith multiple lines\n"))
     }
     
     func testCodeBlockPreserveNewlines() {
         let doc = parse("```\n\nthis is code\n```")
-        print(doc)
         XCTAssertEqual(doc.children[0].type, .codeBlock)
         XCTAssertEqual(doc.children[0].child?.type, .text("\nthis is code\n"))
     }
@@ -275,7 +264,6 @@ class ParserTests: XCTestCase {
             ```
             """
         let doc = parse(str, features: [.inlineCode])
-        print(doc)
         XCTAssertEqual(doc.children[0].type, .text(str))
     }
     
