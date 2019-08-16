@@ -211,6 +211,10 @@ extension Node {
 
             case let .blockQuote(level):
                 let style = renderer?.blockQuoteStyle() ?? BlockQuoteStyle()
+                
+                let _color = font.color
+                let _size = font.size
+                let _bold = font.bold
 
                 font.size = style.size
                 font.color = style.textColor
@@ -228,9 +232,9 @@ extension Node {
                 font.paragraphStyle = tempStyle
 
                 defer {
-                    font.size = nil
-                    font.color = nil
-                    font.bold = false
+                    font.size = _size
+                    font.color = _color
+                    font.bold = _bold
                     font.paragraphStyle = pStyle
                 }
                 return processChildren()
