@@ -1,0 +1,15 @@
+on:
+  push:
+    branches:
+      - "*"
+      - "!main"
+
+name: Development
+jobs:
+  build:
+    name: Test
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Test
+        run: xcodebuild clean && xcodebuild test -project SwiftMark.xcodeproj -scheme SwiftMarkTests
