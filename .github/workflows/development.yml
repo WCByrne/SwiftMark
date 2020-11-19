@@ -12,4 +12,4 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Test
-        run: xcodebuild clean && xcodebuild test -project MultipartFormData.xcodeproj -scheme MultipartFormDataTests
+        run: xcodebuild clean && xcodebuild test -project SwiftMark.xcodeproj -scheme SwiftMarkTests
