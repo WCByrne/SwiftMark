@@ -1,6 +1,6 @@
-# SwiftMark 
+# SwiftMark
 
-[![Build Status](https://travis-ci.org/WCByrne/SwiftMark.svg?branch=master)](https://travis-ci.org/WCByrne/SwiftMark)
+![Development](https://github.com/WCByrne/SwiftMark/workflows/Development/badge.svg)
 
 Work in progress Markdown parser in Swift.
 

@@ -1,10 +1,9 @@
 on:
   push:
     branches:
-      - "*"
-      - "!main"
+      - "main"
 
-name: Development
+name: Main
 jobs:
   build:
     name: Test
