@@ -1,6 +1,6 @@
 # SwiftMark
 
-![Development](https://github.com/WCByrne/SwiftMark/workflows/Development/badge.svg)
+![Development](https://github.com/WCByrne/SwiftMark/workflows/Main/badge.svg)
 
 Work in progress Markdown parser in Swift.
 
