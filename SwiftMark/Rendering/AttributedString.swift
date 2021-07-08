@@ -23,6 +23,20 @@ public struct HeadingStyle {
     }
 }
 
+public struct ListStyle {
+    public let spacing: CGFloat
+    public let bullet: String
+    public let indent: CGFloat
+    public let lineIndent: CGFloat
+
+    public init(spacing: CGFloat = -1, indent: CGFloat = 20, lineIndent: CGFloat = 10, bullet: String = "•") {
+        self.bullet = bullet
+        self.spacing = spacing
+        self.indent = indent
+        self.lineIndent = lineIndent
+    }
+}
+
 public struct BlockQuoteStyle {
     let textColor: NSColor?
     let borderColor: NSColor
@@ -50,14 +64,18 @@ public extension NSAttributedString.Key {
 public protocol AttributedStringRenderer {
     func styleForLevel(_ level: Int) -> HeadingStyle?
     func blockQuoteStyle() -> BlockQuoteStyle
+    func listStyle() -> ListStyle
 }
 
-extension AttributedStringRenderer {
+public extension AttributedStringRenderer {
     func styleForLevel(_ level: Int) -> HeadingStyle? {
         return nil
     }
     func blockQuoteStyle() -> BlockQuoteStyle {
         return BlockQuoteStyle(borderColor: NSColor.red)
+    }
+    func listStyle() -> ListStyle {
+        return ListStyle()
     }
 }
 
@@ -177,11 +195,13 @@ extension Node {
                     return list
                 }
                 let pStyle = font.paragraphStyle
+                
+                let style = renderer?.listStyle() ?? ListStyle()
 
                 let listStyle = pStyle?.mutableCopy() as? NSMutableParagraphStyle
-                listStyle?.paragraphSpacing = pStyle?.lineSpacing ?? 0
-                listStyle?.headIndent = 20
-                listStyle?.firstLineHeadIndent = 10
+                listStyle?.paragraphSpacing = style.spacing >= 0 ? style.spacing : (pStyle?.lineSpacing ?? 0)
+                listStyle?.headIndent = style.indent
+                listStyle?.firstLineHeadIndent = style.lineIndent
                 font.paragraphStyle = listStyle
 
                 for (idx, listItem) in node.children.enumerated() {
@@ -191,8 +211,8 @@ extension Node {
                         s?.paragraphSpacing = pStyle?.paragraphSpacing ?? 0
                         font.paragraphStyle = s
                     }
-                    assert(listItem.type == .listItem, "None list item in list")
-                    let bullet = ordered ? "\(idx + 1). " : "• "
+                    assert(listItem.type == .listItem, "No list item in list")
+                    let bullet = ordered ? "\(idx + 1). " : "\(style.bullet) "
                     list.append(NSAttributedString(string: bullet, attributes: font.attributes))
                     let itemText = render(node: listItem)
                     list.append(itemText)
