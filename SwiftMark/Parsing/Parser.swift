@@ -43,7 +43,7 @@ open class Parser {
         
         // This should be replaced by scanning the newlines but this was a quick hack
         let lines = self.markdown.components(separatedBy: .newlines)
-        var document = Node(type: .document)
+        let document = Node(type: .document)
         
         var wasNewline = false
         var isNewline = true
@@ -75,7 +75,6 @@ open class Parser {
         }
         
         var quote: Node?
-        var code: Node?
         var list: Node?
         var codeBlock: Node?
         var skipNewline: Bool = false
@@ -123,7 +122,7 @@ open class Parser {
             isNewline = true
             let line = _line.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
             let scanner = Scanner(string: line)
-            var lastEmph = ""
+//            var lastEmph = ""
             scanner.charactersToBeSkipped = CharacterSet()
             var stack = [NodeType]()
             
@@ -210,7 +209,7 @@ open class Parser {
                     func commitLast() {
                         if !last.isEmpty {
                             if last.first == "_" || last.first == "*" {
-                                lastEmph = last
+//                                lastEmph = last
                             }
                             marks.append(last)
                         }

@@ -1,22 +1,9 @@
-//: Playground - noun: a place where people can play
+// Playground - noun: a place where people can play
 
 import PlaygroundSupport
 import SwiftMark
 import Foundation
 import AppKit
-
-//let html = """
-//<html>
-//<h1>This is a heading</h1>
-//<p>This is a paragraph</p>
-//<hr>
-//<p>Body...</p>
-//</html>
-//""".data(using: .utf8)!
-//
-//let attrString = try! NSAttributedString(html: html, documentAttributes: nil)
-//
-//print(attrString)
 
 let rawMarkdown = """
 Prefix
