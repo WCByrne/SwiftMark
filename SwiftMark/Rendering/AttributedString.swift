@@ -16,10 +16,12 @@ public struct HeadingStyle {
     }
     public let size: CGFloat
     public let weight: Weight
+    public let paragraphStyle: NSParagraphStyle?
 
-    public init(size: CGFloat, weight: Weight) {
+    public init(size: CGFloat, weight: Weight, paragraphStyle: NSParagraphStyle? = nil) {
         self.size = size
         self.weight = weight
+        self.paragraphStyle = paragraphStyle
     }
 }
 
@@ -164,6 +166,9 @@ extension Node {
                     case .bold: font.bold = true
                     case let .weight(w): font.weight = w
                     }
+                    if let pStyle = provided.paragraphStyle {
+                        font.paragraphStyle = pStyle
+                    }
                 } else {
                     font.size = baseFont.pointSize + CGFloat(level * 4)
                     font.bold = true
@@ -173,6 +178,7 @@ extension Node {
                     font.bold = false
                     font.size = baseFont.pointSize
                     font.weight = nil
+                    font.paragraphStyle = paragraphStyle
                 }
                 return processChildren()
             case .emphasis:
