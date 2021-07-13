@@ -186,7 +186,15 @@ extension Node {
             case .horizontalRule:
                 let attachment = NSTextAttachment(fileWrapper: nil)
                 attachment.attachmentCell = HorizontalRuleAttachmentCell(imageCell: nil)
-                return NSAttributedString(attachment: attachment)
+//                return NSAttributedString(attachment: attachment)
+                let str = NSMutableAttributedString(attachment: attachment)
+                
+                let pStyle = NSMutableParagraphStyle()
+                pStyle.paragraphSpacing = 14
+                
+                str.addAttributes([.paragraphStyle: pStyle],
+                                  range: str.range)
+                return str
                 
             case let .list(ordered):
 
@@ -303,17 +311,17 @@ extension Node {
 
 private class HorizontalRuleAttachmentCell: NSTextAttachmentCell {
     override func cellFrame(for textContainer: NSTextContainer, proposedLineFragment lineFrag: NSRect, glyphPosition position: NSPoint, characterIndex charIndex: Int) -> NSRect {
-        return CGRect(x: 0, y: 0, width: lineFrag.size.width, height: 44)
+        return CGRect(x: 0, y: 0, width: lineFrag.size.width, height: 14)
     }
     
     override func draw(withFrame cellFrame: NSRect, in controlView: NSView?) {
-        NSColor(white: 0.8, alpha: 1).set()
-        var inset = cellFrame.insetBy(dx: 2, dy: 0)
-        inset.origin.x += 2
-        inset.origin.y += 11
-        inset.size.height = 1
-        inset.size.width -= 20
-        inset.fill()
+        let path = NSBezierPath()
+        let y = ceil(cellFrame.origin.y + (cellFrame.size.height / 2)) + 0.5
+        path.move(to: NSPoint(x: cellFrame.origin.x + 2, y: y))
+        path.line(to: NSPoint(x: cellFrame.size.width - 8, y: y))
+        NSColor(white: 0.8, alpha: 1).setStroke()
+        path.lineWidth = 0.5
+        path.stroke()
     }
 }
 
