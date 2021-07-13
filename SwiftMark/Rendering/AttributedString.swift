@@ -186,12 +186,9 @@ extension Node {
             case .horizontalRule:
                 let attachment = NSTextAttachment(fileWrapper: nil)
                 attachment.attachmentCell = HorizontalRuleAttachmentCell(imageCell: nil)
-//                return NSAttributedString(attachment: attachment)
                 let str = NSMutableAttributedString(attachment: attachment)
-                
                 let pStyle = NSMutableParagraphStyle()
                 pStyle.paragraphSpacing = 14
-                
                 str.addAttributes([.paragraphStyle: pStyle],
                                   range: str.range)
                 return str
