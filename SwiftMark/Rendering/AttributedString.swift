@@ -314,8 +314,8 @@ private class HorizontalRuleAttachmentCell: NSTextAttachmentCell {
     override func draw(withFrame cellFrame: NSRect, in controlView: NSView?) {
         let path = NSBezierPath()
         let y = ceil(cellFrame.origin.y + (cellFrame.size.height / 2)) + 0.5
-        path.move(to: NSPoint(x: cellFrame.origin.x + 2, y: y))
-        path.line(to: NSPoint(x: cellFrame.size.width - 8, y: y))
+        path.move(to: NSPoint(x: cellFrame.origin.x, y: y))
+        path.line(to: NSPoint(x: cellFrame.size.width - 6, y: y))
         NSColor(white: 0.8, alpha: 1).setStroke()
         path.lineWidth = 0.5
         path.stroke()
