@@ -301,6 +301,7 @@ extension Node {
                 var attrs = font.attributes
                 attrs[.underlineStyle] = NSUnderlineStyle.single.rawValue
                 attrs[.link] = URL(string: url)?.validatingScheme
+                attrs[.cursor] = NSCursor.pointingHand
                 return NSAttributedString(string: title, attributes: attrs)
                 
             default:
